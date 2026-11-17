@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Icon, Logo } from "@/components/Icon";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { IconName } from "@/components/Icon";
 import { api, post } from "@/lib/api";
 import type { Me } from "@/lib/api";
@@ -24,27 +25,6 @@ const MeContext = createContext<Me | null>(null);
 export const useMe = () => useContext(MeContext);
 export const hasRole = (me: Me | null, ...roles: string[]) =>
   !!me?.roles.some((r) => r.role === "system_admin" || roles.includes(r.role));
-
-function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const saved = (() => { try { return localStorage.getItem("ss-theme"); } catch { return null; } })();
-    const isDark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-    setDark(isDark);
-    if (saved) document.documentElement.dataset.theme = saved;
-  }, []);
-  const toggle = () => {
-    const next = dark ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem("ss-theme", next); } catch { /* storage blocked */ }
-    setDark(!dark);
-  };
-  return (
-    <button type="button" onClick={toggle} className="btn btn-ghost btn-sm w-9 px-0" aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}>
-      <Icon name={dark ? "sun" : "moon"} size={16} />
-    </button>
-  );
-}
 
 export function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();

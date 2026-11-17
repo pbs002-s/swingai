@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Bengali } from "next/font/google";
+import { THEME_BOOT } from "@/components/ThemeToggle";
 import { I18nProvider } from "@/lib/i18n";
 import "./globals.css";
 
@@ -29,6 +30,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+      </head>
       <body className={`${geist.variable} ${geistMono.variable} ${bengali.variable} antialiased`}>
         <I18nProvider>{children}</I18nProvider>
       </body>
