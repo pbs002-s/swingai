@@ -1,0 +1,20 @@
+{$SITE_ADDRESS} {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+	# Live updates: never buffered or compressed
+	@stream path /api/v1/stream/*
+	handle @stream {
+		reverse_proxy web:3000 {
+			flush_interval -1
+		}
+	}
+	handle {
+		encode zstd gzip
+		request_body {
+			max_size 1MB
+		}
+		reverse_proxy web:3000
+	}
+}

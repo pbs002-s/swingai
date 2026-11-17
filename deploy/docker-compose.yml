@@ -1,0 +1,61 @@
+# StitchSense: one install per client factory.
+#   cp deploy/.env.example deploy/.env   # then edit it
+#   docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d --build
+name: stitchsense
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stitchsense
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in deploy/.env}
+      POSTGRES_DB: stitchsense
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stitchsense"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ../apps/api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SS_ENV: ${SS_ENV:-production}
+      SS_DATABASE_URL: postgresql+asyncpg://stitchsense:${DB_PASSWORD}@db:5432/stitchsense
+      SS_COOKIE_SECURE: ${SS_COOKIE_SECURE:-true}
+      SS_ADMIN_EMAIL: ${SS_ADMIN_EMAIL:-admin@stitchsense.local}
+      SS_ADMIN_PASSWORD: ${SS_ADMIN_PASSWORD:?set SS_ADMIN_PASSWORD in deploy/.env}
+      SS_SIMULATOR_ENABLED: ${SS_SIMULATOR_ENABLED:-false}
+
+  web:
+    build:
+      context: ../apps/web
+      args:
+        NEXT_PUBLIC_DEMO: ${DEMO_MODE:-0}
+    restart: unless-stopped
+    depends_on: [api]
+    environment:
+      API_URL: http://api:8000
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on: [web]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+
+volumes:
+  db-data:
+  caddy-data:
