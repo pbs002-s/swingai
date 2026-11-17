@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>StitchSense — admin overview</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+Condensed:wght@500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F2ED}
+.ss{--bg:#F4F2ED;--surface:#FFFFFF;--sunk:#ECE9E2;--ink:#17191C;--ink2:#4A4F57;--line:#DEDAD1;--line2:#C9C4B8;--brand:#1E4FD8;--brand-bg:#E5ECFC;--run:#1E7B4F;--run-bg:#E1F0E7;--idle:#9A5806;--idle-bg:#FBEFD9;--down:#B42318;--down-bg:#FBE3E0;--off:#6B7078;--off-bg:#E7E6E2;font-family:"IBM Plex Sans","Noto Sans Bengali",system-ui,sans-serif;font-size:14px;color:var(--ink);background:var(--bg)}
+.ss ::selection{background:#C9D6FA;color:#17191C}
+.ss a{color:var(--brand);text-underline-offset:3px}
+.ss a:hover{color:#163BA6}
+.ss .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.ss .disp{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif}
+.ss button{font:500 13px/1 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--surface);border:1px solid var(--line2);border-radius:7px;min-height:36px;padding:0 12px;cursor:pointer}
+.ss button:hover{background:var(--sunk)}
+.ss button:focus-visible,.ss a:focus-visible,.ss select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.ss .nav a{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border-radius:7px;color:var(--ink2);text-decoration:none;font-size:14px}
+.ss .nav a:hover{background:var(--sunk);color:var(--ink)}
+.ss .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.ss th{font-weight:500;font-size:12px;color:var(--ink2);text-align:left}
+</style>
+</helmet>
+<div class="ss" style="min-height: 100vh; display: flex; flex-wrap: wrap">
+
+  <aside style="flex: 1 1 232px; max-width: 100%; box-sizing: border-box; padding: 16px 12px; border-right: 1px solid var(--line); background: var(--bg); display: flex; flex-direction: column; gap: 16px">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: var(--ink)">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="7" fill="#17191C"></rect><path d="M9 21 L19 7" stroke="#F4F2ED" stroke-width="2" stroke-linecap="round"></path><circle cx="18" cy="8.5" r="1.6" stroke="#F4F2ED" stroke-width="1.2"></circle><path d="M6 16 C 10 12, 14 22, 22 15" stroke="#7EA0FF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      <span class="disp" style="font-size: 19px; font-weight: 700">StitchSense</span>
+    </a>
+    <label style="display: flex; flex-direction: column; gap: 4px; padding: 0 8px; font-size: 12px; color: var(--ink2)">Factory
+      <select style="font: 500 14px 'IBM Plex Sans',sans-serif; min-height: 38px; border: 1px solid var(--line2); border-radius: 7px; background: var(--surface); color: var(--ink); padding: 0 8px"><option>Unit 2 · 6 lines · 200 stations</option><option>Unit 1</option></select>
+    </label>
+    <nav class="nav" aria-label="App" style="display: flex; flex-direction: column; gap: 2px">
+      <sc-for list="{{nav}}" as="n" hint-placeholder-count="10">
+        <a href="{{n.href}}" style="{{n.style}}" aria-current="{{n.current}}"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="{{n.icon}}" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>{{n.label}}<span style="{{n.badgeStyle}}">{{n.badge}}</span></a>
+      </sc-for>
+    </nav>
+    <div style="margin-top: auto; padding: 12px 8px 0; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px">
+      <span style="width: 32px; height: 32px; border-radius: 50%; background: var(--brand-bg); color: var(--brand); display: grid; place-items: center; font-weight: 600; font-size: 13px">FA</span>
+      <span style="display: flex; flex-direction: column"><span style="font-weight: 500">Factory admin</span><span style="font-size: 12px; color: var(--ink2)">admin@unit2.example</span></span>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 640px; min-width: 0; padding: 20px 28px 40px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h1 class="disp" style="margin: 0; font-size: 30px; font-weight: 700">Overview</h1>
+        <span style="color: var(--ink2)">Day shift · 08:00–17:00 · <span class="mono">updated 09:42:10</span></span>
+      </div>
+      <div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+        <div role="group" aria-label="Language" style="display: flex; border: 1px solid var(--line2); border-radius: 7px; overflow: hidden"><button type="button" aria-pressed="true" style="border: 0; border-radius: 0; background: var(--ink); color: #fff">EN</button><button type="button" aria-pressed="false" style="border: 0; border-radius: 0; font-family: 'Noto Sans Bengali',sans-serif">বাংলা</button></div>
+        <button type="button">Today</button>
+        <button type="button" aria-label="Notifications, 12 unread" style="position: relative; width: 38px; padding: 0"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 14 V9 a5 5 0 0 1 10 0 V14 L16 15.5 H4 Z M8.5 17.5 h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="mono" style="position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--down); color: #fff; font-size: 11px; display: grid; place-items: center; padding: 0 4px">12</span></button>
+        <button type="button">Export report</button>
+      </div>
+    </div>
+
+    <section aria-label="Shift summary" class="panel" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))">
+      <sc-for list="{{summary}}" as="s" hint-placeholder-count="5">
+        <div style="padding: 16px 20px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 13px; color: var(--ink2)">{{s.label}}</span>
+          <span style="display: flex; align-items: baseline; gap: 6px"><span class="mono" style="font-size: 26px; font-weight: 500; letter-spacing: -0.02em">{{s.value}}</span><span class="mono" style="color: var(--ink2)">{{s.unit}}</span></span>
+          <span style="height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden"><span style="{{s.bar}}"></span></span>
+          <span style="font-size: 12px; color: var(--ink2)">{{s.note}}</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <section aria-labelledby="lines-h" class="panel" style="flex: 999 1 560px; min-width: 0; overflow: hidden">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line)">
+          <h2 id="lines-h" style="margin: 0; font-size: 16px; font-weight: 600">Lines</h2>
+          <span style="color: var(--ink2)">6 lines · 200 stations</span>
+          <a href="Floor.dc.html" style="margin-left: auto; font-weight: 500">Open live floor</a>
+        </div>
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; min-width: 640px">
+            <thead><tr><th style="padding: 10px 18px">Line</th><th style="padding: 10px 8px">Station states</th><th style="padding: 10px 8px; text-align: right">Output / target</th><th style="padding: 10px 8px; text-align: right">Efficiency</th><th style="padding: 10px 8px; text-align: right">Downtime</th><th style="padding: 10px 18px 10px 8px">Alerts</th></tr></thead>
+            <tbody>
+              <sc-for list="{{lines}}" as="l" hint-placeholder-count="6">
+                <tr style="border-top: 1px solid var(--line)">
+                  <td style="padding: 12px 18px"><span style="display: flex; flex-direction: column"><span style="font-weight: 600">{{l.name}}</span><span style="font-size: 12px; color: var(--ink2)">{{l.product}}</span></span></td>
+                  <td style="padding: 12px 8px; min-width: 200px"><span style="display: flex; height: 10px; border-radius: 3px; overflow: hidden; gap: 2px"><span style="{{l.run}}"></span><span style="{{l.idle}}"></span><span style="{{l.down}}"></span><span style="{{l.off}}"></span></span><span class="mono" style="font-size: 12px; color: var(--ink2)">{{l.counts}}</span></td>
+                  <td class="mono" style="padding: 12px 8px; text-align: right">{{l.output}}</td>
+                  <td class="mono" style="padding: 12px 8px; text-align: right">{{l.eff}}</td>
+                  <td class="mono" style="padding: 12px 8px; text-align: right">{{l.downtime}}</td>
+                  <td style="padding: 12px 18px 12px 8px"><span style="{{l.alertStyle}}">{{l.alerts}}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="alerts-h" class="panel" style="flex: 1 1 380px; min-width: 0; overflow: hidden">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line)">
+          <h2 id="alerts-h" style="margin: 0; font-size: 16px; font-weight: 600">Alert center</h2>
+          <span class="mono" style="color: var(--ink2)">12 open</span>
+          <a href="#rules" style="margin-left: auto; font-weight: 500">Alert rules</a>
+        </div>
+        <div role="group" aria-label="Filter alerts" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 18px; border-bottom: 1px solid var(--line)">
+          <button type="button" aria-pressed="true" style="background: var(--ink); color: #fff; border-color: var(--ink)">All 12</button>
+          <button type="button" aria-pressed="false">Critical 2</button>
+          <button type="button" aria-pressed="false">Warning 7</button>
+          <button type="button" aria-pressed="false">Devices 3</button>
+        </div>
+        <ul style="margin: 0; padding: 0; list-style: none">
+          <sc-for list="{{alerts}}" as="a" hint-placeholder-count="6">
+            <li style="display: flex; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); align-items: flex-start">
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="{{a.shape}}" fill="{{a.color}}"></path></svg>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-weight: 600">{{a.title}}</span>
+                <span style="color: var(--ink2); font-size: 13px">{{a.detail}}</span>
+                <span class="mono" style="color: var(--ink2); font-size: 12px">{{a.meta}}</span>
+              </span>
+              <button type="button" style="flex: none">{{a.action}}</button>
+            </li>
+          </sc-for>
+        </ul>
+        <div style="padding: 12px 18px"><a href="#all-alerts" style="font-weight: 500">View all alerts</a></div>
+      </section>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch">
+      <section aria-labelledby="hourly-h" class="panel" style="flex: 999 1 560px; min-width: 0; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px">
+          <h2 id="hourly-h" style="margin: 0; font-size: 16px; font-weight: 600">Output by hour</h2>
+          <span style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink2)"><span style="width: 10px; height: 10px; border-radius: 2px; background: var(--brand)"></span>Confirmed units</span>
+          <span style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink2)"><span style="width: 14px; border-top: 2px dashed var(--ink)"></span>Target 1,160 / hour</span>
+          <span style="margin-left: auto; font-size: 12px; color: var(--ink2)">All lines</span>
+        </div>
+        <div role="img" aria-label="Output by hour: 08:00 1,020, 09:00 1,140, 10:00 so far 410 of 1,160 target" style="position: relative; height: 200px; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 12px; align-items: end; border-bottom: 1px solid var(--line2); padding-top: 8px">
+          <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 154px; border-top: 2px dashed var(--ink); opacity: .55"></div>
+          <sc-for list="{{hours}}" as="h" hint-placeholder-count="9">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end">
+              <span class="mono" style="font-size: 11px; color: var(--ink2)">{{h.label}}</span>
+              <div style="{{h.bar}}"></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 12px">
+          <sc-for list="{{hours}}" as="h" hint-placeholder-count="9"><span class="mono" style="font-size: 12px; color: var(--ink2); text-align: center">{{h.time}}</span></sc-for>
+        </div>
+      </section>
+
+      <section aria-labelledby="dev-h" class="panel" style="flex: 1 1 380px; min-width: 0; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center"><h2 id="dev-h" style="margin: 0; font-size: 16px; font-weight: 600">Devices</h2><a href="#devices" style="margin-left: auto; font-weight: 500">Manage</a></div>
+        <sc-for list="{{devices}}" as="d" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line)">
+            <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 500">{{d.kind}}</span><span style="font-size: 12px; color: var(--ink2)">{{d.note}}</span></span>
+            <span class="mono" style="font-size: 15px">{{d.count}}</span>
+            <span style="{{d.tagStyle}}">{{d.tag}}</span>
+          </div>
+        </sc-for>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const navItems = [
+      ['Overview', 'Overview.dc.html', 'M3 3 H9 V9 H3 Z M11 3 H17 V9 H11 Z M3 11 H9 V17 H3 Z M11 11 H17 V17 H11 Z', ''],
+      ['Live floor', 'Floor.dc.html', 'M3 6 H17 M3 10 H17 M3 14 H17 M7 3 V17 M13 3 V17', ''],
+      ['Review queue', 'Floor.dc.html', 'M4 10.5 L8 14 L16 6', '18'],
+      ['Production', '#production', 'M4 16 V10 M10 16 V4 M16 16 V8', ''],
+      ['Needles', 'Needles.dc.html', 'M5 16 L15 4 M13.5 3.5 L16.5 6.5', ''],
+      ['Quality', '#quality', 'M10 3 L16 6 V11 C16 14 13 16.5 10 17 C7 16.5 4 14 4 11 V6 Z', ''],
+      ['Performance', 'Needles.dc.html', 'M3 16 L8 10 L11 13 L17 5', ''],
+      ['Alerts', '#alerts', 'M10 3 L17 16 H3 Z M10 8 V11', '12'],
+      ['Reports', '#reports', 'M5 3 H12 L15 6 V17 H5 Z M8 10 H12 M8 13 H12', ''],
+      ['Settings', '#settings', 'M10 7 A3 3 0 1 1 10 13 A3 3 0 1 1 10 7 Z M10 2 V4 M10 16 V18 M2 10 H4 M16 10 H18', '']
+    ];
+    const nav = navItems.map(([label, href, icon, badge], i) => ({
+      label, href, icon, badge,
+      current: i === 0 ? 'page' : 'false',
+      style: i === 0 ? 'background: #FFFFFF; color: #17191C; font-weight: 600; border: 1px solid #DEDAD1;' : '',
+      badgeStyle: badge ? 'margin-left: auto; font: 500 11px \"IBM Plex Mono\",monospace; background: #17191C; color: #FFFFFF; border-radius: 9px; padding: 2px 7px;' : 'display: none;'
+    }));
+    const bar = (pct, c) => 'display: block; height: 100%; width: ' + pct + '%; background: ' + c + ';';
+    const summary = [
+      { label: 'Output so far', value: '2,570', unit: '/ 3,480', bar: bar(74, '#1E4FD8'), note: '74% of target to 10:00' },
+      { label: 'SMV efficiency', value: '68.4', unit: '%', bar: bar(68, '#1E4FD8'), note: 'Line target 70%' },
+      { label: 'Stations running', value: '171', unit: '/ 200', bar: bar(86, '#1E7B4F'), note: '9 idle · 4 down · 16 no data' },
+      { label: 'Machine downtime', value: '3 h 12', unit: 'min', bar: bar(22, '#B42318'), note: 'Most: needle change' },
+      { label: 'Data coverage', value: '92', unit: '%', bar: bar(92, '#4A4F57'), note: '3 cameras offline' }
+    ];
+    const seg = (n, c, extra) => 'display: block; flex: ' + n + ' 0 0; background: ' + c + ';' + (extra || '');
+    const tag = (bg, fg) => 'display: inline-block; padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 500; background: ' + bg + '; color: ' + fg + ';';
+    const L = (name, product, r, i, d, o, output, eff, downtime, alerts, level) => ({
+      name, product, output, eff, downtime, alerts,
+      run: seg(r, '#1E7B4F'), idle: seg(i, '#E0A240'), down: seg(d, '#B42318'), off: seg(o, '#B9BCC2'),
+      counts: r + ' run · ' + i + ' idle · ' + d + ' down · ' + o + ' n/d',
+      alertStyle: level === 'c' ? tag('#FBE3E0', '#8F1C13') : level === 'w' ? tag('#FBEFD9', '#6E3F04') : tag('#E7E6E2', '#4A4F57')
+    });
+    const lines = [
+      L('Line 1', 'Basic T-shirt · sleeve', 31, 2, 0, 1, '472 / 580', '71.2%', '18 min', '1 warning', 'w'),
+      L('Line 2', 'Basic T-shirt · collar', 30, 1, 1, 2, '430 / 580', '66.0%', '41 min', '1 critical', 'c'),
+      L('Line 3', 'Polo · placket', 28, 3, 1, 2, '395 / 580', '62.8%', '52 min', '4 open', 'c'),
+      L('Line 4', 'Polo · side seam', 29, 1, 0, 4, '455 / 580', '70.5%', '12 min', '2 devices', 'n'),
+      L('Line 5', 'Hoodie · hood join', 25, 2, 2, 3, '360 / 580', '64.1%', '58 min', '3 warnings', 'w'),
+      L('Line 6', 'Hoodie · cuff', 28, 0, 0, 4, '458 / 580', '72.0%', '11 min', '1 device', 'n')
+    ];
+    const shapes = {
+      c: { shape: 'M9 1 L17 9 L9 17 L1 9 Z', color: '#B42318' },
+      w: { shape: 'M9 2 L17 16 H1 Z', color: '#C27A12' },
+      n: { shape: 'M9 2 A7 7 0 1 1 9 16 A7 7 0 1 1 9 2 Z', color: '#6B7078' }
+    };
+    const A = (lvl, title, detail, meta, action) => Object.assign({ title, detail, meta, action }, shapes[lvl]);
+    const alerts = [
+      A('c', 'Batch break rate 50%', 'Needle lot B-104 · Supplier A · 6 machines, 5 workers', 'Factory · 08:55 · rule: batch break rate', 'Investigate'),
+      A('c', 'Machine stopped 12 min', 'L3-S12 · no downtime reason yet', 'Line 3 · 09:30 · sensor', 'Acknowledge'),
+      A('w', 'Possible phone use', 'L3-S26 · 1 min 38 s · confidence 0.87', 'Line 3 · 09:38 · camera · needs review', 'Review'),
+      A('w', 'Idle over 8 min', 'L5-S04 · machine running, no activity', 'Line 5 · 09:35 · camera + sensor', 'Review'),
+      A('n', 'Camera offline', 'EDGE1-CAM21 · last seen 09:38', 'Line 3 · 09:41 · station time marked no data', 'Open'),
+      A('w', 'Line below target', 'Line 3 at 68% of hourly target', 'Line 3 · 09:00 · rule: hourly output', 'Open')
+    ];
+    const H = (time, v, label, now) => ({ time, label, bar: 'width: 100%; max-width: 44px; border-radius: 4px 4px 0 0; height: ' + Math.round(v / 1160 * 154) + 'px; background: ' + (now ? 'repeating-linear-gradient(135deg, #1E4FD8 0 4px, #8FA8F0 4px 8px)' : '#1E4FD8') + ';' });
+    const hours = [H('08', 1020, '1,020'), H('09', 1140, '1,140'), H('10', 410, '410 so far', true), H('11', 0, ''), H('12', 0, ''), H('13', 0, 'lunch'), H('14', 0, ''), H('15', 0, ''), H('16', 0, '')];
+    const devices = [
+      { kind: 'Machine sensors', note: 'Clamp-on current sensors', count: '198 / 200', tag: 'OK', tagStyle: tag('#E1F0E7', '#155C3A') },
+      { kind: 'Cameras', note: '3 offline on Line 3 and 4', count: '97 / 100', tag: '3 offline', tagStyle: tag('#FBEFD9', '#6E3F04') },
+      { kind: 'Card readers', note: 'Shift check-in', count: '200 / 200', tag: 'OK', tagStyle: tag('#E1F0E7', '#155C3A') },
+      { kind: 'Edge boxes', note: 'Outbox empty · synced 09:42', count: '2 / 2', tag: 'OK', tagStyle: tag('#E1F0E7', '#155C3A') }
+    ];
+    return { nav, summary, lines, alerts, hours, devices };
+  }
+}
+</script>
+</body>
+</html>

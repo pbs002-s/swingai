@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>StitchSense — supervisor live floor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+Condensed:wght@500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F2ED}
+.ss{--bg:#F4F2ED;--surface:#FFFFFF;--sunk:#ECE9E2;--ink:#17191C;--ink2:#4A4F57;--line:#DEDAD1;--line2:#C9C4B8;--brand:#1E4FD8;--brand-bg:#E5ECFC;--run:#1E7B4F;--run-bg:#E1F0E7;--idle:#9A5806;--idle-bg:#FBEFD9;--down:#B42318;--down-bg:#FBE3E0;--off:#6B7078;--off-bg:#E7E6E2;font-family:"IBM Plex Sans","Noto Sans Bengali",system-ui,sans-serif;font-size:14px;color:var(--ink);background:var(--bg)}
+.ss ::selection{background:#C9D6FA;color:#17191C}
+.ss a{color:var(--brand);text-underline-offset:3px}
+.ss a:hover{color:#163BA6}
+.ss .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.ss .disp{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif}
+.ss button{font:500 14px/1 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--surface);border:1px solid var(--line2);border-radius:8px;min-height:44px;padding:0 14px;cursor:pointer}
+.ss button:hover{background:var(--sunk)}
+.ss button:focus-visible,.ss a:focus-visible,.ss input:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.ss .primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.ss .primary:hover{background:#163BA6}
+.ss .nav a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:7px;color:var(--ink2);text-decoration:none;font-size:14px}
+.ss .nav a:hover{background:var(--sunk);color:var(--ink)}
+.ss .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.ss input{font:400 15px "IBM Plex Mono",monospace;width:100%;box-sizing:border-box;min-height:44px;border:1px solid var(--line2);border-radius:8px;padding:0 10px;background:var(--surface);color:var(--ink);text-align:right}
+</style>
+</helmet>
+<div class="ss" style="min-height: 100vh; display: flex; flex-wrap: wrap">
+
+  <aside style="flex: 1 1 232px; max-width: 100%; box-sizing: border-box; padding: 16px 12px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 16px">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: var(--ink)">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="7" fill="#17191C"></rect><path d="M9 21 L19 7" stroke="#F4F2ED" stroke-width="2" stroke-linecap="round"></path><circle cx="18" cy="8.5" r="1.6" stroke="#F4F2ED" stroke-width="1.2"></circle><path d="M6 16 C 10 12, 14 22, 22 15" stroke="#7EA0FF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      <span class="disp" style="font-size: 19px; font-weight: 700">StitchSense</span>
+    </a>
+    <nav class="nav" aria-label="App" style="display: flex; flex-direction: column; gap: 2px">
+      <sc-for list="{{nav}}" as="n" hint-placeholder-count="6">
+        <a href="{{n.href}}" style="{{n.style}}" aria-current="{{n.current}}"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="{{n.icon}}" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>{{n.label}}<span style="{{n.badgeStyle}}">{{n.badge}}</span></a>
+      </sc-for>
+    </nav>
+    <div style="margin-top: auto; padding: 12px 8px 0; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px">
+      <span style="width: 32px; height: 32px; border-radius: 50%; background: var(--brand-bg); color: var(--brand); display: grid; place-items: center; font-weight: 600; font-size: 13px">KA</span>
+      <span style="display: flex; flex-direction: column"><span style="font-weight: 500">Supervisor</span><span style="font-size: 12px; color: var(--ink2)">Line 3 · Day shift</span></span>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 640px; min-width: 0; padding: 20px 28px 40px; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h1 class="disp" style="margin: 0; font-size: 30px; font-weight: 700">Line 3 · Live floor</h1>
+        <span style="color: var(--ink2)">Polo · placket attach · SMV 0.62 · <span class="mono">updated 09:42:10</span></span>
+      </div>
+      <div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px">
+        <button type="button">Assign workers</button>
+        <button type="button" class="primary">Enter hourly output</button>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Lines" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line)">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="6">
+        <button type="button" role="tab" aria-selected="{{t.selected}}" style="{{t.style}}">{{t.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <section aria-labelledby="map-h" class="panel" style="flex: 999 1 560px; min-width: 0; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px">
+          <h2 id="map-h" style="margin: 0; font-size: 16px; font-weight: 600">Stations</h2>
+          <sc-for list="{{legend}}" as="g" hint-placeholder-count="4">
+            <span style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink2)"><span style="{{g.swatch}}"></span>{{g.label}}</span>
+          </sc-for>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px">
+          <sc-for list="{{tiles}}" as="t" hint-placeholder-count="40">
+            <button type="button" aria-label="{{t.aria}}" style="{{t.style}}">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">{{t.code}}</span><span class="mono" style="font-size: 11px">{{t.mark}}</span></span>
+              <span style="font-size: 12px; font-weight: 500">{{t.worker}}</span>
+              <span class="mono" style="font-size: 11px">{{t.out}}</span>
+            </button>
+          </sc-for>
+        </div>
+        <p style="margin: 0; font-size: 12px; color: var(--ink2)">Shape marks: ▲ needs review · ✕ machine down · ? no data. Tap a station to open its timeline.</p>
+      </section>
+
+      <section aria-labelledby="queue-h" class="panel" style="flex: 1 1 380px; min-width: 0; overflow: hidden">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line)">
+          <h2 id="queue-h" style="margin: 0; font-size: 16px; font-weight: 600">Review queue</h2>
+          <span class="mono" style="color: var(--ink2)">18 waiting</span>
+          <span style="margin-left: auto; font-size: 12px; color: var(--ink2)">Oldest 22 min</span>
+        </div>
+        <sc-for list="{{queue}}" as="q" hint-placeholder-count="3">
+          <article style="padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; gap: 12px">
+              <div style="flex: none; width: 96px; height: 72px; border-radius: 8px; background: repeating-linear-gradient(135deg, #ECE9E2 0 6px, #E3DFD6 6px 12px); border: 1px solid var(--line2); display: grid; place-items: center; text-align: center; font-size: 10px; color: var(--ink2); padding: 4px; box-sizing: border-box">{{q.evidence}}</div>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="display: flex; gap: 8px; align-items: center"><span style="font-weight: 600">{{q.title}}</span><span style="{{q.confStyle}}">{{q.conf}}</span></span>
+                <span style="color: var(--ink2); font-size: 13px">{{q.detail}}</span>
+                <span class="mono" style="color: var(--ink2); font-size: 12px">{{q.meta}}</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <button type="button" class="primary">Confirm</button>
+              <button type="button">Reject</button>
+              <button type="button">Reclassify</button>
+            </div>
+          </article>
+        </sc-for>
+        <div style="padding: 12px 18px"><a href="#queue" style="font-weight: 500">Open full queue</a></div>
+      </section>
+    </div>
+
+    <section aria-labelledby="tl-h" class="panel" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+        <h2 id="tl-h" style="margin: 0; font-size: 16px; font-weight: 600">L3-S07 · Rahima K. · today</h2>
+        <span style="color: var(--ink2)">Machine M-0412 · Lockstitch</span>
+        <div style="margin-left: auto; display: flex; gap: 8px"><button type="button">Add pause reason</button><button type="button">Change worker</button></div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 10px 16px; align-items: center">
+        <span style="font-size: 13px; color: var(--ink2)">Worker</span>
+        <div role="img" aria-label="Worker timeline 08:00 to 10:00: mostly productive, one idle period 08:48 to 08:55, one possible phone use at 09:38" style="display: flex; height: 28px; border-radius: 6px; overflow: hidden; background: var(--sunk)">
+          <sc-for list="{{workerLane}}" as="s" hint-placeholder-count="8"><span style="{{s}}"></span></sc-for>
+        </div>
+        <span style="font-size: 13px; color: var(--ink2)">Machine</span>
+        <div role="img" aria-label="Machine timeline: running with two stops, one for a needle change at 09:12" style="display: flex; height: 28px; border-radius: 6px; overflow: hidden; background: var(--sunk)">
+          <sc-for list="{{machineLane}}" as="s" hint-placeholder-count="6"><span style="{{s}}"></span></sc-for>
+        </div>
+        <span></span>
+        <div style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr))">
+          <sc-for list="{{ticks}}" as="t" hint-placeholder-count="9"><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">{{t}}</span></sc-for>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 12px 28px; padding-top: 12px; border-top: 1px solid var(--line)">
+        <sc-for list="{{minutes}}" as="m" hint-placeholder-count="6">
+          <span style="display: flex; gap: 8px; align-items: center"><span style="{{m.swatch}}"></span><span style="color: var(--ink2)">{{m.label}}</span><span class="mono" style="font-weight: 500">{{m.value}}</span></span>
+        </sc-for>
+      </div>
+
+      <form aria-label="Hourly output for L3-S07" style="display: grid; grid-template-columns: 120px repeat(4, minmax(0, 140px)) auto; gap: 10px 12px; align-items: end; padding-top: 12px; border-top: 1px solid var(--line)">
+        <span style="font-weight: 600; padding-bottom: 12px">09:00–10:00</span>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2)">Accepted<input type="text" inputmode="numeric" value="58"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2)">Rework<input type="text" inputmode="numeric" value="3"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2)">Rejected<input type="text" inputmode="numeric" value="0"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2)">Sensor count<input type="text" value="61" readonly aria-readonly="true" style="background: var(--sunk)"></label>
+        <button type="button" class="primary">Confirm hour</button>
+      </form>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const navItems = [
+      ['Live floor', 'Floor.dc.html', 'M3 6 H17 M3 10 H17 M3 14 H17 M7 3 V17 M13 3 V17', ''],
+      ['Review queue', '#queue', 'M4 10.5 L8 14 L16 6', '18'],
+      ['Assignments', '#assign', 'M7 8 A3 3 0 1 1 7 2 A3 3 0 1 1 7 8 Z M2 17 C2 13 4 11 7 11 C10 11 12 13 12 17 M14 7 H18 M16 5 V9', ''],
+      ['Production', '#production', 'M4 16 V10 M10 16 V4 M16 16 V8', ''],
+      ['Needles', 'Needles.dc.html', 'M5 16 L15 4 M13.5 3.5 L16.5 6.5', ''],
+      ['Alerts', 'Overview.dc.html', 'M10 3 L17 16 H3 Z M10 8 V11', '4']
+    ];
+    const nav = navItems.map(([label, href, icon, badge], i) => ({
+      label, href, icon, badge,
+      current: i === 0 ? 'page' : 'false',
+      style: i === 0 ? 'background: #FFFFFF; color: #17191C; font-weight: 600; border: 1px solid #DEDAD1;' : '',
+      badgeStyle: badge ? 'margin-left: auto; font: 500 11px monospace; background: #17191C; color: #FFFFFF; border-radius: 9px; padding: 2px 7px;' : 'display: none;'
+    }));
+    const tabs = [1, 2, 3, 4, 5, 6].map((n) => ({
+      label: 'Line ' + n, selected: n === 3 ? 'true' : 'false',
+      style: n === 3 ? 'border: 0; border-bottom: 3px solid #1E4FD8; border-radius: 0; background: transparent; font-weight: 600;' : 'border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #4A4F57;'
+    }));
+    const look = {
+      r: 'background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;',
+      i: 'background: #FBEFD9; color: #5E3503; border: 1.5px solid #9A5806;',
+      d: 'background: #B42318; color: #FFFFFF; border: 1.5px solid #B42318;',
+      o: 'background: #E7E6E2; color: #3F434A; border: 1.5px dashed #6B7078;'
+    };
+    const swatch = (k) => 'width: 12px; height: 12px; border-radius: 3px; box-sizing: border-box; ' + look[k];
+    const legend = [
+      { label: 'Running', swatch: swatch('r') }, { label: 'Idle', swatch: swatch('i') },
+      { label: 'Machine down', swatch: swatch('d') }, { label: 'No data', swatch: swatch('o') }
+    ];
+    const states = 'rrrrrrrrrrrdrrrrrrrorrrrrirrrrrrirrrrrri';
+    const workers = ['Shirin A.', 'Mitu R.', 'Laila B.', 'Josna K.', 'Ruma S.', 'Nasrin H.', 'Rahima K.', 'Popy D.'];
+    const names = { r: 'running', i: 'idle', d: 'machine down', o: 'no data' };
+    const tiles = states.split('').map((s, i) => {
+      const code = 'S' + String(i + 1).padStart(2, '0');
+      const review = i === 25 || i === 3 || i === 34;
+      const mark = s === 'd' ? '✕' : s === 'o' ? '?' : review ? '▲' : '';
+      const out = s === 'o' ? '—' : (40 + ((i * 7) % 22)) + '/58';
+      const sel = i === 6 ? ' outline: 3px solid #1E4FD8; outline-offset: 2px;' : '';
+      return {
+        code, mark, out, worker: workers[i % workers.length],
+        aria: code + ', ' + workers[i % workers.length] + ', ' + names[s] + (review ? ', needs review' : ''),
+        style: 'min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; ' + look[s] + sel
+      };
+    });
+    const tag = (bg, fg) => 'padding: 2px 7px; border-radius: 5px; font: 500 12px monospace; background: ' + bg + '; color: ' + fg + ';';
+    const queue = [
+      { title: 'Possible phone use', conf: '0.87', confStyle: tag('#FBEFD9', '#6E3F04'), detail: 'S26 · Popy D. · 1 min 38 s, machine stopped', meta: '09:38 · camera EDGE1-CAM26', evidence: 'Still image · faces blurred' },
+      { title: 'Suspected needle break', conf: 'sensor', confStyle: tag('#E5ECFC', '#163BA6'), detail: 'S12 · Mitu R. · lot B-104 installed 08:05', meta: '09:30 · machine stop + alarm', evidence: 'No image · sensor event' },
+      { title: 'Idle over 8 min', conf: '0.71', confStyle: tag('#FBEFD9', '#6E3F04'), detail: 'S33 · Mitu R. · machine running, no activity', meta: '09:21 · camera + sensor', evidence: 'Still image · faces blurred' }
+    ];
+    const total = 540;
+    const seg = (min, c, pattern) => 'display: block; flex: ' + min + ' 0 0; background: ' + (pattern ? 'repeating-linear-gradient(135deg, ' + c + ' 0 4px, #FFFFFF 4px 7px)' : c) + ';';
+    const workerLane = [seg(48, '#1E7B4F'), seg(7, '#E0A240'), seg(45, '#1E7B4F'), seg(2, '#B42318'), seg(10, '#1E7B4F'), seg(4, '#E0A240', true), seg(4, '#1E7B4F'), seg(420, 'transparent')];
+    const machineLane = [seg(70, '#1E4FD8'), seg(2, '#B9BCC2'), seg(30, '#1E4FD8'), seg(4, '#B42318'), seg(14, '#1E4FD8'), seg(420, 'transparent')];
+    const ticks = ['08', '09', '10', '11', '12', '13', '14', '15', '16'];
+    const sw = (c, p) => 'width: 12px; height: 12px; border-radius: 3px; background: ' + (p ? 'repeating-linear-gradient(135deg, ' + c + ' 0 3px, #FFFFFF 3px 5px)' : c) + ';';
+    const minutes = [
+      { label: 'Productive', value: '107 min', swatch: sw('#1E7B4F') }, { label: 'Idle', value: '7 min', swatch: sw('#E0A240') },
+      { label: 'Phone (pending review)', value: '4 min', swatch: sw('#E0A240', true) }, { label: 'Machine down', value: '6 min', swatch: sw('#B42318') },
+      { label: 'Coverage', value: '100%', swatch: sw('#4A4F57') }, { label: 'Efficiency', value: '71.6%', swatch: sw('#1E4FD8') }
+    ];
+    return { nav, tabs, legend, tiles, queue, workerLane, machineLane, ticks, minutes, total };
+  }
+}
+</script>
+</body>
+</html>

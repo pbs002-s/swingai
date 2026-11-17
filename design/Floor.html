@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>StitchSense — supervisor live floor</title>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+Condensed:wght@500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F2ED}
+.ss{--bg:#F4F2ED;--surface:#FFFFFF;--sunk:#ECE9E2;--ink:#17191C;--ink2:#4A4F57;--line:#DEDAD1;--line2:#C9C4B8;--brand:#1E4FD8;--brand-bg:#E5ECFC;--run:#1E7B4F;--run-bg:#E1F0E7;--idle:#9A5806;--idle-bg:#FBEFD9;--down:#B42318;--down-bg:#FBE3E0;--off:#6B7078;--off-bg:#E7E6E2;font-family:"IBM Plex Sans","Noto Sans Bengali",system-ui,sans-serif;font-size:14px;color:var(--ink);background:var(--bg)}
+.ss ::selection{background:#C9D6FA;color:#17191C}
+.ss a{color:var(--brand);text-underline-offset:3px}
+.ss a:hover{color:#163BA6}
+.ss .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.ss .disp{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif}
+.ss button{font:500 14px/1 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--surface);border:1px solid var(--line2);border-radius:8px;min-height:44px;padding:0 14px;cursor:pointer}
+.ss button:hover{background:var(--sunk)}
+.ss button:focus-visible,.ss a:focus-visible,.ss input:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.ss .primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.ss .primary:hover{background:#163BA6}
+.ss .nav a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:7px;color:var(--ink2);text-decoration:none;font-size:14px}
+.ss .nav a:hover{background:var(--sunk);color:var(--ink)}
+.ss .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.ss input{font:400 15px "IBM Plex Mono",monospace;width:100%;box-sizing:border-box;min-height:44px;border:1px solid var(--line2);border-radius:8px;padding:0 10px;background:var(--surface);color:var(--ink);text-align:right}
+</style>
+
+<style>x-dc { display: block; width: 100%; min-height: 100vh; }</style>
+</head>
+<body>
+<x-dc>
+
+<div class="ss" style="min-height: 100vh; display: flex; flex-wrap: wrap">
+
+  <aside style="flex: 1 1 232px; max-width: 100%; box-sizing: border-box; padding: 16px 12px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 16px">
+    <a href="Main.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: var(--ink)">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="7" fill="#17191C"></rect><path d="M9 21 L19 7" stroke="#F4F2ED" stroke-width="2" stroke-linecap="round"></path><circle cx="18" cy="8.5" r="1.6" stroke="#F4F2ED" stroke-width="1.2"></circle><path d="M6 16 C 10 12, 14 22, 22 15" stroke="#7EA0FF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      <span class="disp" style="font-size: 19px; font-weight: 700">StitchSense</span>
+    </a>
+    <nav class="nav" aria-label="App" style="display: flex; flex-direction: column; gap: 2px">
+      
+        <a href="Floor.html" style="background: #FFFFFF; color: #17191C; font-weight: 600; border: 1px solid #DEDAD1;" aria-current="page"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6 H17 M3 10 H17 M3 14 H17 M7 3 V17 M13 3 V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Live floor<span style="display: none;"></span></a>
+      
+        <a href="#queue" style="" aria-current="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 L8 14 L16 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Review queue<span style="margin-left: auto; font: 500 11px monospace; background: #17191C; color: #FFFFFF; border-radius: 9px; padding: 2px 7px;">18</span></a>
+      
+        <a href="#assign" style="" aria-current="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 8 A3 3 0 1 1 7 2 A3 3 0 1 1 7 8 Z M2 17 C2 13 4 11 7 11 C10 11 12 13 12 17 M14 7 H18 M16 5 V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Assignments<span style="display: none;"></span></a>
+      
+        <a href="#production" style="" aria-current="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 16 V10 M10 16 V4 M16 16 V8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Production<span style="display: none;"></span></a>
+      
+        <a href="Needles.html" style="" aria-current="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 16 L15 4 M13.5 3.5 L16.5 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Needles<span style="display: none;"></span></a>
+      
+        <a href="Overview.html" style="" aria-current="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3 L17 16 H3 Z M10 8 V11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>Alerts<span style="margin-left: auto; font: 500 11px monospace; background: #17191C; color: #FFFFFF; border-radius: 9px; padding: 2px 7px;">4</span></a>
+      
+    </nav>
+    <div style="margin-top: auto; padding: 12px 8px 0; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px">
+      <span style="width: 32px; height: 32px; border-radius: 50%; background: var(--brand-bg); color: var(--brand); display: grid; place-items: center; font-weight: 600; font-size: 13px">KA</span>
+      <span style="display: flex; flex-direction: column"><span style="font-weight: 500">Supervisor</span><span style="font-size: 12px; color: var(--ink2)">Line 3 · Day shift</span></span>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 640px; min-width: 0; padding: 20px 28px 40px; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h1 class="disp" style="margin: 0; font-size: 30px; font-weight: 700">Line 3 · Live floor</h1>
+        <span style="color: var(--ink2)">Polo · placket attach · SMV 0.62 · <span class="mono">updated 09:42:10</span></span>
+      </div>
+      <div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px">
+        <button type="button">Assign workers</button>
+        <button type="button" class="primary">Enter hourly output</button>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Lines" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line)">
+      
+        <button type="button" role="tab" aria-selected="false" style="border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #4A4F57;">Line 1</button>
+      
+        <button type="button" role="tab" aria-selected="false" style="border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #4A4F57;">Line 2</button>
+      
+        <button type="button" role="tab" aria-selected="true" style="border: 0; border-bottom: 3px solid #1E4FD8; border-radius: 0; background: transparent; font-weight: 600;">Line 3</button>
+      
+        <button type="button" role="tab" aria-selected="false" style="border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #4A4F57;">Line 4</button>
+      
+        <button type="button" role="tab" aria-selected="false" style="border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #4A4F57;">Line 5</button>
+      
+        <button type="button" role="tab" aria-selected="false" style="border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #4A4F57;">Line 6</button>
+      
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <section aria-labelledby="map-h" class="panel" style="flex: 999 1 560px; min-width: 0; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px">
+          <h2 id="map-h" style="margin: 0; font-size: 16px; font-weight: 600">Stations</h2>
+          
+            <span style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink2)"><span style="width: 12px; height: 12px; border-radius: 3px; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;"></span>Running</span>
+          
+            <span style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink2)"><span style="width: 12px; height: 12px; border-radius: 3px; box-sizing: border-box; background: #FBEFD9; color: #5E3503; border: 1.5px solid #9A5806;"></span>Idle</span>
+          
+            <span style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink2)"><span style="width: 12px; height: 12px; border-radius: 3px; box-sizing: border-box; background: #B42318; color: #FFFFFF; border: 1.5px solid #B42318;"></span>Machine down</span>
+          
+            <span style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--ink2)"><span style="width: 12px; height: 12px; border-radius: 3px; box-sizing: border-box; background: #E7E6E2; color: #3F434A; border: 1.5px dashed #6B7078;"></span>No data</span>
+          
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px">
+          
+            <button type="button" aria-label="S01, Shirin A., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S01</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Shirin A.</span>
+              <span class="mono" style="font-size: 11px">40/58</span>
+            </button>
+          
+            <button type="button" aria-label="S02, Mitu R., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S02</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Mitu R.</span>
+              <span class="mono" style="font-size: 11px">47/58</span>
+            </button>
+          
+            <button type="button" aria-label="S03, Laila B., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S03</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Laila B.</span>
+              <span class="mono" style="font-size: 11px">54/58</span>
+            </button>
+          
+            <button type="button" aria-label="S04, Josna K., running, needs review" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S04</span><span class="mono" style="font-size: 11px">▲</span></span>
+              <span style="font-size: 12px; font-weight: 500">Josna K.</span>
+              <span class="mono" style="font-size: 11px">61/58</span>
+            </button>
+          
+            <button type="button" aria-label="S05, Ruma S., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S05</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Ruma S.</span>
+              <span class="mono" style="font-size: 11px">46/58</span>
+            </button>
+          
+            <button type="button" aria-label="S06, Nasrin H., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S06</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Nasrin H.</span>
+              <span class="mono" style="font-size: 11px">53/58</span>
+            </button>
+          
+            <button type="button" aria-label="S07, Rahima K., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F; outline: 3px solid #1E4FD8; outline-offset: 2px;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S07</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Rahima K.</span>
+              <span class="mono" style="font-size: 11px">60/58</span>
+            </button>
+          
+            <button type="button" aria-label="S08, Popy D., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S08</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Popy D.</span>
+              <span class="mono" style="font-size: 11px">45/58</span>
+            </button>
+          
+            <button type="button" aria-label="S09, Shirin A., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S09</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Shirin A.</span>
+              <span class="mono" style="font-size: 11px">52/58</span>
+            </button>
+          
+            <button type="button" aria-label="S10, Mitu R., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S10</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Mitu R.</span>
+              <span class="mono" style="font-size: 11px">59/58</span>
+            </button>
+          
+            <button type="button" aria-label="S11, Laila B., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S11</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Laila B.</span>
+              <span class="mono" style="font-size: 11px">44/58</span>
+            </button>
+          
+            <button type="button" aria-label="S12, Josna K., machine down" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #B42318; color: #FFFFFF; border: 1.5px solid #B42318;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S12</span><span class="mono" style="font-size: 11px">✕</span></span>
+              <span style="font-size: 12px; font-weight: 500">Josna K.</span>
+              <span class="mono" style="font-size: 11px">51/58</span>
+            </button>
+          
+            <button type="button" aria-label="S13, Ruma S., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S13</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Ruma S.</span>
+              <span class="mono" style="font-size: 11px">58/58</span>
+            </button>
+          
+            <button type="button" aria-label="S14, Nasrin H., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S14</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Nasrin H.</span>
+              <span class="mono" style="font-size: 11px">43/58</span>
+            </button>
+          
+            <button type="button" aria-label="S15, Rahima K., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S15</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Rahima K.</span>
+              <span class="mono" style="font-size: 11px">50/58</span>
+            </button>
+          
+            <button type="button" aria-label="S16, Popy D., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S16</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Popy D.</span>
+              <span class="mono" style="font-size: 11px">57/58</span>
+            </button>
+          
+            <button type="button" aria-label="S17, Shirin A., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S17</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Shirin A.</span>
+              <span class="mono" style="font-size: 11px">42/58</span>
+            </button>
+          
+            <button type="button" aria-label="S18, Mitu R., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S18</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Mitu R.</span>
+              <span class="mono" style="font-size: 11px">49/58</span>
+            </button>
+          
+            <button type="button" aria-label="S19, Laila B., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S19</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Laila B.</span>
+              <span class="mono" style="font-size: 11px">56/58</span>
+            </button>
+          
+            <button type="button" aria-label="S20, Josna K., no data" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E7E6E2; color: #3F434A; border: 1.5px dashed #6B7078;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S20</span><span class="mono" style="font-size: 11px">?</span></span>
+              <span style="font-size: 12px; font-weight: 500">Josna K.</span>
+              <span class="mono" style="font-size: 11px">—</span>
+            </button>
+          
+            <button type="button" aria-label="S21, Ruma S., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S21</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Ruma S.</span>
+              <span class="mono" style="font-size: 11px">48/58</span>
+            </button>
+          
+            <button type="button" aria-label="S22, Nasrin H., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S22</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Nasrin H.</span>
+              <span class="mono" style="font-size: 11px">55/58</span>
+            </button>
+          
+            <button type="button" aria-label="S23, Rahima K., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S23</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Rahima K.</span>
+              <span class="mono" style="font-size: 11px">40/58</span>
+            </button>
+          
+            <button type="button" aria-label="S24, Popy D., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S24</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Popy D.</span>
+              <span class="mono" style="font-size: 11px">47/58</span>
+            </button>
+          
+            <button type="button" aria-label="S25, Shirin A., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S25</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Shirin A.</span>
+              <span class="mono" style="font-size: 11px">54/58</span>
+            </button>
+          
+            <button type="button" aria-label="S26, Mitu R., idle, needs review" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #FBEFD9; color: #5E3503; border: 1.5px solid #9A5806;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S26</span><span class="mono" style="font-size: 11px">▲</span></span>
+              <span style="font-size: 12px; font-weight: 500">Mitu R.</span>
+              <span class="mono" style="font-size: 11px">61/58</span>
+            </button>
+          
+            <button type="button" aria-label="S27, Laila B., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S27</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Laila B.</span>
+              <span class="mono" style="font-size: 11px">46/58</span>
+            </button>
+          
+            <button type="button" aria-label="S28, Josna K., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S28</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Josna K.</span>
+              <span class="mono" style="font-size: 11px">53/58</span>
+            </button>
+          
+            <button type="button" aria-label="S29, Ruma S., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S29</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Ruma S.</span>
+              <span class="mono" style="font-size: 11px">60/58</span>
+            </button>
+          
+            <button type="button" aria-label="S30, Nasrin H., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S30</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Nasrin H.</span>
+              <span class="mono" style="font-size: 11px">45/58</span>
+            </button>
+          
+            <button type="button" aria-label="S31, Rahima K., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S31</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Rahima K.</span>
+              <span class="mono" style="font-size: 11px">52/58</span>
+            </button>
+          
+            <button type="button" aria-label="S32, Popy D., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S32</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Popy D.</span>
+              <span class="mono" style="font-size: 11px">59/58</span>
+            </button>
+          
+            <button type="button" aria-label="S33, Shirin A., idle" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #FBEFD9; color: #5E3503; border: 1.5px solid #9A5806;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S33</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Shirin A.</span>
+              <span class="mono" style="font-size: 11px">44/58</span>
+            </button>
+          
+            <button type="button" aria-label="S34, Mitu R., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S34</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Mitu R.</span>
+              <span class="mono" style="font-size: 11px">51/58</span>
+            </button>
+          
+            <button type="button" aria-label="S35, Laila B., running, needs review" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S35</span><span class="mono" style="font-size: 11px">▲</span></span>
+              <span style="font-size: 12px; font-weight: 500">Laila B.</span>
+              <span class="mono" style="font-size: 11px">58/58</span>
+            </button>
+          
+            <button type="button" aria-label="S36, Josna K., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S36</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Josna K.</span>
+              <span class="mono" style="font-size: 11px">43/58</span>
+            </button>
+          
+            <button type="button" aria-label="S37, Ruma S., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S37</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Ruma S.</span>
+              <span class="mono" style="font-size: 11px">50/58</span>
+            </button>
+          
+            <button type="button" aria-label="S38, Nasrin H., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S38</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Nasrin H.</span>
+              <span class="mono" style="font-size: 11px">57/58</span>
+            </button>
+          
+            <button type="button" aria-label="S39, Rahima K., running" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #E1F0E7; color: #0F4A2E; border: 1.5px solid #1E7B4F;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S39</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Rahima K.</span>
+              <span class="mono" style="font-size: 11px">42/58</span>
+            </button>
+          
+            <button type="button" aria-label="S40, Popy D., idle" style="min-height: 76px; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 2px; text-align: left; box-sizing: border-box; background: #FBEFD9; color: #5E3503; border: 1.5px solid #9A5806;">
+              <span style="display: flex; justify-content: space-between; width: 100%"><span class="mono" style="font-size: 12px; font-weight: 500">S40</span><span class="mono" style="font-size: 11px"></span></span>
+              <span style="font-size: 12px; font-weight: 500">Popy D.</span>
+              <span class="mono" style="font-size: 11px">49/58</span>
+            </button>
+          
+        </div>
+        <p style="margin: 0; font-size: 12px; color: var(--ink2)">Shape marks: ▲ needs review · ✕ machine down · ? no data. Tap a station to open its timeline.</p>
+      </section>
+
+      <section aria-labelledby="queue-h" class="panel" style="flex: 1 1 380px; min-width: 0; overflow: hidden">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line)">
+          <h2 id="queue-h" style="margin: 0; font-size: 16px; font-weight: 600">Review queue</h2>
+          <span class="mono" style="color: var(--ink2)">18 waiting</span>
+          <span style="margin-left: auto; font-size: 12px; color: var(--ink2)">Oldest 22 min</span>
+        </div>
+        
+          <article style="padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; gap: 12px">
+              <div style="flex: none; width: 96px; height: 72px; border-radius: 8px; background: repeating-linear-gradient(135deg, #ECE9E2 0 6px, #E3DFD6 6px 12px); border: 1px solid var(--line2); display: grid; place-items: center; text-align: center; font-size: 10px; color: var(--ink2); padding: 4px; box-sizing: border-box">Still image · faces blurred</div>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="display: flex; gap: 8px; align-items: center"><span style="font-weight: 600">Possible phone use</span><span style="padding: 2px 7px; border-radius: 5px; font: 500 12px monospace; background: #FBEFD9; color: #6E3F04;">0.87</span></span>
+                <span style="color: var(--ink2); font-size: 13px">S26 · Popy D. · 1 min 38 s, machine stopped</span>
+                <span class="mono" style="color: var(--ink2); font-size: 12px">09:38 · camera EDGE1-CAM26</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <button type="button" class="primary">Confirm</button>
+              <button type="button">Reject</button>
+              <button type="button">Reclassify</button>
+            </div>
+          </article>
+        
+          <article style="padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; gap: 12px">
+              <div style="flex: none; width: 96px; height: 72px; border-radius: 8px; background: repeating-linear-gradient(135deg, #ECE9E2 0 6px, #E3DFD6 6px 12px); border: 1px solid var(--line2); display: grid; place-items: center; text-align: center; font-size: 10px; color: var(--ink2); padding: 4px; box-sizing: border-box">No image · sensor event</div>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="display: flex; gap: 8px; align-items: center"><span style="font-weight: 600">Suspected needle break</span><span style="padding: 2px 7px; border-radius: 5px; font: 500 12px monospace; background: #E5ECFC; color: #163BA6;">sensor</span></span>
+                <span style="color: var(--ink2); font-size: 13px">S12 · Mitu R. · lot B-104 installed 08:05</span>
+                <span class="mono" style="color: var(--ink2); font-size: 12px">09:30 · machine stop + alarm</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <button type="button" class="primary">Confirm</button>
+              <button type="button">Reject</button>
+              <button type="button">Reclassify</button>
+            </div>
+          </article>
+        
+          <article style="padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; gap: 12px">
+              <div style="flex: none; width: 96px; height: 72px; border-radius: 8px; background: repeating-linear-gradient(135deg, #ECE9E2 0 6px, #E3DFD6 6px 12px); border: 1px solid var(--line2); display: grid; place-items: center; text-align: center; font-size: 10px; color: var(--ink2); padding: 4px; box-sizing: border-box">Still image · faces blurred</div>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="display: flex; gap: 8px; align-items: center"><span style="font-weight: 600">Idle over 8 min</span><span style="padding: 2px 7px; border-radius: 5px; font: 500 12px monospace; background: #FBEFD9; color: #6E3F04;">0.71</span></span>
+                <span style="color: var(--ink2); font-size: 13px">S33 · Mitu R. · machine running, no activity</span>
+                <span class="mono" style="color: var(--ink2); font-size: 12px">09:21 · camera + sensor</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <button type="button" class="primary">Confirm</button>
+              <button type="button">Reject</button>
+              <button type="button">Reclassify</button>
+            </div>
+          </article>
+        
+        <div style="padding: 12px 18px"><a href="#queue" style="font-weight: 500">Open full queue</a></div>
+      </section>
+    </div>
+
+    <section aria-labelledby="tl-h" class="panel" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+        <h2 id="tl-h" style="margin: 0; font-size: 16px; font-weight: 600">L3-S07 · Rahima K. · today</h2>
+        <span style="color: var(--ink2)">Machine M-0412 · Lockstitch</span>
+        <div style="margin-left: auto; display: flex; gap: 8px"><button type="button">Add pause reason</button><button type="button">Change worker</button></div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 10px 16px; align-items: center">
+        <span style="font-size: 13px; color: var(--ink2)">Worker</span>
+        <div role="img" aria-label="Worker timeline 08:00 to 10:00: mostly productive, one idle period 08:48 to 08:55, one possible phone use at 09:38" style="display: flex; height: 28px; border-radius: 6px; overflow: hidden; background: var(--sunk)">
+          <span style="display: block; flex: 48 0 0; background: #1E7B4F;"></span><span style="display: block; flex: 7 0 0; background: #E0A240;"></span><span style="display: block; flex: 45 0 0; background: #1E7B4F;"></span><span style="display: block; flex: 2 0 0; background: #B42318;"></span><span style="display: block; flex: 10 0 0; background: #1E7B4F;"></span><span style="display: block; flex: 4 0 0; background: repeating-linear-gradient(135deg, #E0A240 0 4px, #FFFFFF 4px 7px);"></span><span style="display: block; flex: 4 0 0; background: #1E7B4F;"></span><span style="display: block; flex: 420 0 0; background: transparent;"></span>
+        </div>
+        <span style="font-size: 13px; color: var(--ink2)">Machine</span>
+        <div role="img" aria-label="Machine timeline: running with two stops, one for a needle change at 09:12" style="display: flex; height: 28px; border-radius: 6px; overflow: hidden; background: var(--sunk)">
+          <span style="display: block; flex: 70 0 0; background: #1E4FD8;"></span><span style="display: block; flex: 2 0 0; background: #B9BCC2;"></span><span style="display: block; flex: 30 0 0; background: #1E4FD8;"></span><span style="display: block; flex: 4 0 0; background: #B42318;"></span><span style="display: block; flex: 14 0 0; background: #1E4FD8;"></span><span style="display: block; flex: 420 0 0; background: transparent;"></span>
+        </div>
+        <span></span>
+        <div style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr))">
+          <span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">08</span><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">09</span><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">10</span><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">11</span><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">12</span><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">13</span><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">14</span><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">15</span><span class="mono" style="font-size: 11px; color: var(--ink2); border-left: 1px solid var(--line2); padding-left: 4px">16</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 12px 28px; padding-top: 12px; border-top: 1px solid var(--line)">
+        
+          <span style="display: flex; gap: 8px; align-items: center"><span style="width: 12px; height: 12px; border-radius: 3px; background: #1E7B4F;"></span><span style="color: var(--ink2)">Productive</span><span class="mono" style="font-weight: 500">107 min</span></span>
+        
+          <span style="display: flex; gap: 8px; align-items: center"><span style="width: 12px; height: 12px; border-radius: 3px; background: #E0A240;"></span><span style="color: var(--ink2)">Idle</span><span class="mono" style="font-weight: 500">7 min</span></span>
+        
+          <span style="display: flex; gap: 8px; align-items: center"><span style="width: 12px; height: 12px; border-radius: 3px; background: repeating-linear-gradient(135deg, #E0A240 0 3px, #FFFFFF 3px 5px);"></span><span style="color: var(--ink2)">Phone (pending review)</span><span class="mono" style="font-weight: 500">4 min</span></span>
+        
+          <span style="display: flex; gap: 8px; align-items: center"><span style="width: 12px; height: 12px; border-radius: 3px; background: #B42318;"></span><span style="color: var(--ink2)">Machine down</span><span class="mono" style="font-weight: 500">6 min</span></span>
+        
+          <span style="display: flex; gap: 8px; align-items: center"><span style="width: 12px; height: 12px; border-radius: 3px; background: #4A4F57;"></span><span style="color: var(--ink2)">Coverage</span><span class="mono" style="font-weight: 500">100%</span></span>
+        
+          <span style="display: flex; gap: 8px; align-items: center"><span style="width: 12px; height: 12px; border-radius: 3px; background: #1E4FD8;"></span><span style="color: var(--ink2)">Efficiency</span><span class="mono" style="font-weight: 500">71.6%</span></span>
+        
+      </div>
+
+      <form aria-label="Hourly output for L3-S07" style="display: grid; grid-template-columns: 120px repeat(4, minmax(0, 140px)) auto; gap: 10px 12px; align-items: end; padding-top: 12px; border-top: 1px solid var(--line)">
+        <span style="font-weight: 600; padding-bottom: 12px">09:00–10:00</span>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2)">Accepted<input type="text" inputmode="numeric" value="58"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2)">Rework<input type="text" inputmode="numeric" value="3"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2)">Rejected<input type="text" inputmode="numeric" value="0"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2)">Sensor count<input type="text" value="61" readonly aria-readonly="true" style="background: var(--sunk)"></label>
+        <button type="button" class="primary">Confirm hour</button>
+      </form>
+    </section>
+  </main>
+</div>
+</x-dc>
+
+</body>
+</html>

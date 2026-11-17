@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>StitchSense — landing page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+Condensed:wght@500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F2ED}
+.ss{--bg:#F4F2ED;--surface:#FFFFFF;--sunk:#ECE9E2;--ink:#17191C;--ink2:#4A4F57;--line:#DEDAD1;--line2:#C9C4B8;--brand:#1E4FD8;--brand-bg:#E5ECFC;--run:#1E7B4F;--run-bg:#E1F0E7;--idle:#9A5806;--idle-bg:#FBEFD9;--down:#B42318;--down-bg:#FBE3E0;--off:#6B7078;--off-bg:#E7E6E2;font-family:"IBM Plex Sans","Noto Sans Bengali",system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+.ss ::selection{background:#C9D6FA;color:#17191C}
+.ss a{color:var(--brand);text-underline-offset:3px}
+.ss a:hover{color:#163BA6}
+.ss .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:8px;font:600 15px/1 "IBM Plex Sans",sans-serif;text-decoration:none;cursor:pointer;transition:background .15s ease-out,transform .15s ease-out}
+.ss .btn:active{transform:translateY(1px)}
+.ss .btn-p{background:var(--brand);color:#fff;border:1px solid var(--brand)}
+.ss .btn-p:hover{background:#163BA6;color:#fff}
+.ss .btn-s{background:transparent;color:var(--ink);border:1px solid var(--line2)}
+.ss .btn-s:hover{background:var(--surface);color:var(--ink)}
+.ss .btn:focus-visible,.ss input:focus-visible,.ss select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.ss .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.ss .disp{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif;letter-spacing:-0.01em}
+.ss input,.ss select{font:400 15px/1.4 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--surface);border:1px solid var(--line2);border-radius:8px;min-height:44px;padding:0 12px;box-sizing:border-box;width:100%}
+</style>
+</helmet>
+<div class="ss" style="min-height: 100vh">
+
+  <header style="border-bottom: 1px solid var(--line); background: var(--bg)">
+    <nav aria-label="Main" style="max-width: 1240px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
+      <a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink)">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="7" fill="#17191C"></rect><path d="M9 21 L19 7" stroke="#F4F2ED" stroke-width="2" stroke-linecap="round"></path><circle cx="18" cy="8.5" r="1.6" stroke="#F4F2ED" stroke-width="1.2"></circle><path d="M6 16 C 10 12, 14 22, 22 15" stroke="#7EA0FF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+        <span class="disp" style="font-size: 21px; font-weight: 700">StitchSense</span>
+      </a>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1 1 auto; font-size: 15px">
+        <a href="#how" style="color: var(--ink2); text-decoration: none; padding: 12px 0">How it works</a>
+        <a href="#needles" style="color: var(--ink2); text-decoration: none; padding: 12px 0">Needle tracing</a>
+        <a href="#fair" style="color: var(--ink2); text-decoration: none; padding: 12px 0">Fair use</a>
+        <a href="#install" style="color: var(--ink2); text-decoration: none; padding: 12px 0">Installation</a>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center">
+        <a href="#lang" style="color: var(--ink2); text-decoration: none; padding: 12px 4px; font-size: 14px">EN · বাংলা</a>
+        <a class="btn btn-s" href="Overview.dc.html">Log in</a>
+        <a class="btn btn-p" href="#contact">Book a site survey</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section style="max-width: 1240px; margin: 0 auto; padding: 72px 24px 88px; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+      <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+        <h1 class="disp" style="margin: 0; font-size: 64px; line-height: 1.02; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance">Sewing-floor monitoring for garment factories</h1>
+        <p style="margin: 0; font-size: 19px; line-height: 1.55; color: var(--ink2); max-width: 34ch">See every station's working time, output against target and needle breaks on one screen. It runs on your own server, and video never leaves the factory.</p>
+        <p style="margin: 0; display: flex; gap: 10px; align-items: flex-start; font-size: 15px; line-height: 1.5; max-width: 44ch">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M4 10.5 L8 14 L16 6" stroke="#1E7B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <span>Works with any sewing-machine brand. A clamp-on sensor reads whether each machine runs, with no wiring into the machine.</span>
+        </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px">
+          <a class="btn btn-p" href="#contact">Book a site survey</a>
+          <a class="btn btn-s" href="Overview.dc.html">See the dashboard</a>
+        </div>
+      </div>
+
+      <div style="flex: 1.35 1 560px; min-width: 0">
+        <div role="img" aria-label="StitchSense live floor screen: forty stations coloured by state, with three open alerts" style="background: var(--surface); border: 1px solid var(--line2); border-radius: 14px; box-shadow: 0 24px 48px -24px rgba(23,25,28,.28), 0 2px 6px rgba(23,25,28,.06); overflow: hidden">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 13px">
+            <span style="font-weight: 600">Line 3 · Live floor</span>
+            <span style="color: var(--ink2)">Day shift</span>
+            <span class="mono" style="margin-left: auto; color: var(--ink2)">updated 09:42:10</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap">
+            <div style="flex: 1 1 300px; padding: 16px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px">
+              <sc-for list="{{tiles}}" as="t" hint-placeholder-count="40">
+                <div style="{{t.style}}"><span class="mono" style="font-size: 10px">{{t.code}}</span></div>
+              </sc-for>
+            </div>
+            <div style="flex: 1 1 200px; border-left: 1px solid var(--line); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; font-size: 13px">
+              <span style="font-weight: 600">Open alerts</span>
+              <sc-for list="{{heroAlerts}}" as="a" hint-placeholder-count="3">
+                <div style="display: flex; gap: 8px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--line)">
+                  <span style="{{a.dot}}"></span>
+                  <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 500">{{a.title}}</span><span class="mono" style="color: var(--ink2); font-size: 12px">{{a.meta}}</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 10px 16px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink2)">
+            <span style="display: flex; gap: 6px; align-items: center"><span style="width: 10px; height: 10px; border-radius: 3px; background: var(--run)"></span>Running</span>
+            <span style="display: flex; gap: 6px; align-items: center"><span style="width: 10px; height: 10px; border-radius: 3px; background: var(--idle-bg); border: 1.5px solid var(--idle)"></span>Idle</span>
+            <span style="display: flex; gap: 6px; align-items: center"><span style="width: 10px; height: 10px; border-radius: 3px; background: var(--down)"></span>Machine down</span>
+            <span style="display: flex; gap: 6px; align-items: center"><span style="width: 10px; height: 10px; border-radius: 3px; background: var(--off-bg); border: 1.5px dashed var(--off)"></span>No data</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" style="background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line)">
+      <div style="max-width: 1240px; margin: 0 auto; padding: 96px 24px; display: flex; flex-direction: column; gap: 48px">
+        <div style="display: flex; flex-wrap: wrap; gap: 24px 64px; align-items: flex-end">
+          <h2 class="disp" style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 700; flex: 1 1 380px; text-wrap: balance">From the needle to the shift report</h2>
+          <p style="margin: 0; flex: 1 1 380px; font-size: 17px; line-height: 1.6; color: var(--ink2)">Sensors and cameras turn what happens at each station into events. Supervisors confirm what the system is unsure about. Only then does it count toward hours, output and rankings.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0; border-top: 2px solid var(--ink)">
+          <sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+            <div style="padding: 24px 24px 8px 0; display: flex; flex-direction: column; gap: 12px; border-right: 1px solid var(--line); margin-right: 24px">
+              <span style="display: flex; align-items: center; gap: 10px"><span style="width: 36px; height: 36px; border-radius: 8px; background: var(--brand-bg); display: grid; place-items: center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="{{s.icon}}" stroke="#1E4FD8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="disp" style="font-size: 22px; font-weight: 600">{{s.title}}</span></span>
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink2)">{{s.text}}</p>
+              <span class="mono" style="font-size: 12px; color: var(--ink2)">{{s.detail}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="needles" style="max-width: 1240px; margin: 0 auto; padding: 104px 24px; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+      <div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+        <h2 class="disp" style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 700; text-wrap: balance">Needle breaks, traced to the batch</h2>
+        <p style="margin: 0; font-size: 17px; line-height: 1.6; color: var(--ink2); max-width: 46ch">Every needle installed is logged against its supplier lot. When breaks cluster, StitchSense shows whether the pattern follows the batch, the machine or the operator, so a bad lot is not blamed on a worker.</p>
+        <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+          <li style="display: flex; gap: 10px"><span class="mono" style="color: var(--brand); font-weight: 500">→</span>Break rate per needles issued, per 1,000 running hours and per 10,000 units</li>
+          <li style="display: flex; gap: 10px"><span class="mono" style="color: var(--brand); font-weight: 500">→</span>No alert until a batch has enough use to judge</li>
+          <li style="display: flex; gap: 10px"><span class="mono" style="color: var(--brand); font-weight: 500">→</span>Quarantine a lot and record what the investigation found</li>
+        </ul>
+      </div>
+      <div style="flex: 1.2 1 520px; min-width: 0; background: var(--surface); border: 1px solid var(--line2); border-radius: 14px; overflow: hidden">
+        <div style="display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); font-size: 14px"><span style="font-weight: 600">Needle batches · last 30 days</span><span style="margin-left: auto; color: var(--ink2); font-size: 13px">Sample data</span></div>
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px">
+            <thead><tr style="text-align: left; color: var(--ink2); font-size: 12px"><th style="padding: 10px 18px; font-weight: 500">Lot</th><th style="padding: 10px 8px; font-weight: 500">Supplier</th><th style="padding: 10px 8px; font-weight: 500; text-align: right">Issued</th><th style="padding: 10px 8px; font-weight: 500; text-align: right">Breaks</th><th style="padding: 10px 8px; font-weight: 500">Break rate</th><th style="padding: 10px 18px 10px 8px; font-weight: 500">Pattern</th></tr></thead>
+            <tbody>
+              <sc-for list="{{lots}}" as="l" hint-placeholder-count="5">
+                <tr style="border-top: 1px solid var(--line)">
+                  <td class="mono" style="padding: 12px 18px; font-weight: 500">{{l.lot}}</td>
+                  <td style="padding: 12px 8px">{{l.supplier}}</td>
+                  <td class="mono" style="padding: 12px 8px; text-align: right">{{l.issued}}</td>
+                  <td class="mono" style="padding: 12px 8px; text-align: right">{{l.breaks}}</td>
+                  <td style="padding: 12px 8px"><span style="display: flex; align-items: center; gap: 8px"><span style="width: 90px; height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden"><span style="{{l.bar}}"></span></span><span class="mono" style="font-size: 13px">{{l.rate}}</span></span></td>
+                  <td style="padding: 12px 18px 12px 8px"><span style="{{l.tagStyle}}">{{l.pattern}}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="fair" style="background: #17191C; color: #F4F2ED">
+      <div style="max-width: 1240px; margin: 0 auto; padding: 104px 24px; display: flex; flex-wrap: wrap; gap: 56px">
+        <div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+          <h2 class="disp" style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 700; text-wrap: balance">Numbers people can trust, checked by people</h2>
+          <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #C9C6BE; max-width: 44ch">A camera can be wrong. StitchSense marks what it is unsure about, and a supervisor decides. No pay, bonus or training decision is ever made by the software alone.</p>
+          <a class="btn" href="#install" style="align-self: flex-start; background: #F4F2ED; color: #17191C; border: 1px solid #F4F2ED">How data stays in the factory</a>
+        </div>
+        <div style="flex: 1.2 1 520px; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #3A3D42; border: 1px solid #3A3D42; border-radius: 14px; overflow: hidden">
+          <sc-for list="{{fair}}" as="f" hint-placeholder-count="4">
+            <div style="background: #1F2226; padding: 28px; display: flex; flex-direction: column; gap: 10px">
+              <span class="disp" style="font-size: 20px; font-weight: 600">{{f.title}}</span>
+              <span style="font-size: 15px; line-height: 1.6; color: #C9C6BE">{{f.text}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" style="max-width: 1240px; margin: 0 auto; padding: 104px 24px; display: flex; flex-direction: column; gap: 48px">
+      <div style="display: flex; flex-wrap: wrap; gap: 24px 64px; align-items: flex-end">
+        <h2 class="disp" style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 700; flex: 1 1 380px; text-wrap: balance">Installed in your factory, on your server</h2>
+        <p style="margin: 0; flex: 1 1 380px; font-size: 17px; line-height: 1.6; color: var(--ink2)">An edge box on the floor turns video and sensor signals into small events. Your server keeps the database and the dashboards. If the network drops, the edge box keeps 72 hours of events and sends them later.</p>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 0">
+        <sc-for list="{{tiers}}" as="t" hint-placeholder-count="3">
+          <div style="flex: 1 1 260px; display: flex; align-items: stretch">
+            <div style="flex: 1; background: var(--surface); border: 1px solid var(--line2); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+              <span style="font-size: 13px; color: var(--ink2)">{{t.where}}</span>
+              <span class="disp" style="font-size: 24px; font-weight: 600">{{t.title}}</span>
+              <ul style="margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.5">
+                <sc-for list="{{t.items}}" as="i" hint-placeholder-count="3"><li>{{i}}</li></sc-for>
+              </ul>
+            </div>
+            <sc-if value="{{t.arrow}}" hint-placeholder-val="{{true}}">
+              <div aria-hidden="true" style="width: 48px; display: grid; place-items: center; color: var(--ink2)"><svg width="32" height="16" viewBox="0 0 32 16" fill="none"><path d="M1 8 H29 M23 2 L29 8 L23 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin: 0; font-size: 15px; color: var(--ink2)">Interface in English and বাংলা. Hardware list, network needs and what we ask of your team: <a href="#requirements">deployment requirements</a>.</p>
+    </section>
+
+    <section id="contact" style="background: var(--surface); border-top: 1px solid var(--line)">
+      <div style="max-width: 1240px; margin: 0 auto; padding: 104px 24px; display: flex; flex-wrap: wrap; gap: 56px">
+        <div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+          <h2 class="disp" style="margin: 0; font-size: 52px; line-height: 1.02; font-weight: 700; text-wrap: balance">Start with one line of ten stations</h2>
+          <p style="margin: 0; font-size: 17px; line-height: 1.6; color: var(--ink2); max-width: 42ch">We visit the floor, check your machines and network, and run a pilot in observation mode next to your current records before anything goes live.</p>
+          <p style="margin: 0; font-size: 15px; color: var(--ink2)">Or write to <a href="mailto:hello@stitchsense.example">hello@stitchsense.example</a></p>
+        </div>
+        <form style="flex: 1 1 440px; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px" aria-label="Book a site survey">
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Your name<input type="text" name="name" autocomplete="name"></label>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Work email<input type="email" name="email" autocomplete="email"></label>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Factory or company<input type="text" name="company" autocomplete="organization"></label>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Sewing stations<select name="stations"><option>Under 100</option><option>100 to 500</option><option>Over 500</option></select></label>
+          <button class="btn btn-p" type="button" style="grid-column: 1 / -1; justify-self: start">Book a site survey</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top: 1px solid var(--line)">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 28px 24px; display: flex; flex-wrap: wrap; gap: 12px 32px; font-size: 14px; color: var(--ink2)">
+      <span class="disp" style="font-weight: 700; color: var(--ink)">StitchSense</span>
+      <a href="#privacy" style="color: var(--ink2)">Worker privacy</a>
+      <a href="#requirements" style="color: var(--ink2)">Deployment requirements</a>
+      <a href="Overview.dc.html" style="color: var(--ink2)">Log in</a>
+      <span style="margin-left: auto">[YOUR COMPANY LEGAL NAME]</span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const states = 'rrrrirrrrrrdrrrrrrrrorrrrirrrrrrrrrrrrrr';
+    const base = 'height: 34px; border-radius: 6px; display: grid; place-items: center; box-sizing: border-box;';
+    const look = {
+      r: 'background: #1E7B4F; color: #FFFFFF;',
+      i: 'background: #FBEFD9; color: #6E3F04; border: 1.5px solid #9A5806;',
+      d: 'background: #B42318; color: #FFFFFF;',
+      o: 'background: #E7E6E2; color: #4A4F57; border: 1.5px dashed #6B7078;'
+    };
+    const tiles = states.split('').map((s, i) => ({ code: String(i + 1).padStart(2, '0'), style: base + look[s] }));
+    const dot = (c) => 'flex: none; width: 8px; height: 8px; border-radius: 2px; margin-top: 6px; background: ' + c + ';';
+    const heroAlerts = [
+      { title: 'Machine stopped 12 min', meta: 'S12 · 09:30', dot: dot('#B42318') },
+      { title: 'Possible phone use', meta: 'S26 · 09:38 · 0.87', dot: dot('#9A5806') },
+      { title: 'Camera offline', meta: 'S21 · 09:41', dot: dot('#6B7078') }
+    ];
+    const steps = [
+      { title: 'Sense', text: 'A clamp-on sensor reads machine running time. Cameras on the edge box mark whether a station is working.', detail: 'machine state · activity', icon: 'M3 10 H6 L8 5 L12 15 L14 10 H17' },
+      { title: 'Review', text: 'Phone use, needle breaks and anything the system is unsure of wait in a supervisor queue.', detail: 'confirm · reject · reclassify', icon: 'M4 10.5 L8 14 L16 6' },
+      { title: 'Measure', text: 'Shift time, output against target and SMV efficiency, with the data coverage behind each number.', detail: 'per worker · line · shift', icon: 'M4 16 V10 M10 16 V4 M16 16 V8' },
+      { title: 'Act', text: 'Alerts for downtime and bad needle lots. Training suggestions only after other causes are ruled out.', detail: 'alerts · investigations', icon: 'M10 3 L17 16 H3 Z M10 8 V11 M10 13.5 V13.6' }
+    ];
+    const tag = (bg, fg) => 'display: inline-block; padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 500; background: ' + bg + '; color: ' + fg + ';';
+    const bar = (pct, c) => 'display: block; height: 100%; width: ' + Math.min(pct * 2, 100) + '%; background: ' + c + ';';
+    const lots = [
+      { lot: 'B-104', supplier: 'Supplier A', issued: 20, breaks: 10, rate: '50.0%', bar: bar(50, '#B42318'), pattern: 'Batch pattern', tagStyle: tag('#FBE3E0', '#8F1C13') },
+      { lot: 'GB-5521', supplier: 'Supplier B', issued: 100, breaks: 4, rate: '4.0%', bar: bar(4, '#1E4FD8'), pattern: 'Normal', tagStyle: tag('#E1F0E7', '#155C3A') },
+      { lot: 'B-109', supplier: 'Supplier A', issued: 40, breaks: 3, rate: '7.5%', bar: bar(7.5, '#1E4FD8'), pattern: 'Normal', tagStyle: tag('#E1F0E7', '#155C3A') },
+      { lot: 'C-077', supplier: 'Supplier C', issued: 6, breaks: 1, rate: '16.7%', bar: bar(16.7, '#9A5806'), pattern: 'Too little use', tagStyle: tag('#E7E6E2', '#4A4F57') },
+      { lot: 'GB-5530', supplier: 'Supplier B', issued: 80, breaks: 2, rate: '2.5%', bar: bar(2.5, '#1E4FD8'), pattern: 'Normal', tagStyle: tag('#E1F0E7', '#155C3A') }
+    ];
+    const fair = [
+      { title: 'No face recognition', text: 'Workers are known by station assignment or their attendance card, never by their face.' },
+      { title: 'No sound, no live watching', text: 'Video becomes simple events at the edge. Only a few still images are kept, for review.' },
+      { title: 'Unsure means unsure', text: 'Low-confidence events are shown as uncertain and never counted as fact.' },
+      { title: 'Workers can dispute', text: 'A wrong record goes back to review through the supervisor, and the correction is logged.' }
+    ];
+    const tiers = [
+      { where: 'At each station', title: 'Sensors and cameras', items: ['Clamp-on current sensor', 'Optional card reader', 'Camera over the work area'], arrow: true },
+      { where: 'On the floor', title: 'Edge box', items: ['Turns video into events', '72 hours of offline buffer', 'Video stays here'], arrow: true },
+      { where: 'Your server or cloud account', title: 'StitchSense server', items: ['Database and dashboards', 'Nightly backups', 'Your data, your rules'], arrow: false }
+    ];
+    return { tiles, heroAlerts, steps, lots, fair, tiers, true: true };
+  }
+}
+</script>
+</body>
+</html>
