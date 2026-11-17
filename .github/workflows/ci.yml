@@ -62,6 +62,7 @@ jobs:
       SS_ENV: development
       SS_DATABASE_URL: postgresql+asyncpg://stitchsense:stitchsense@localhost:5433/stitchsense
       SS_SIMULATOR_ENABLED: "true"
+      SS_SEED_DEMO: "true"
       SS_LOGIN_RATE_PER_MINUTE: "200"
       NEXT_PUBLIC_DEMO: "1"
     steps:
