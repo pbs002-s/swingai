@@ -1,0 +1,3 @@
+supplier_name,brand,system,size_nm,point_type,lot_no,received_on,qty_received
+Supplier A,Organ,DBx1,90,SES,B-104,2026-10-02,20
+Supplier B,Groz-Beckert,DCx27,80,FFG,GB-5521,2026-10-20,100
