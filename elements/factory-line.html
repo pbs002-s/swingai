@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Factory Line</title>
+<style>
+  /* ===== Edit colours here. Cloth colours are in CONFIG in the script below. ===== */
+  :root {
+    --bg: #f6f5f2; --panel: #ffffff; --ink: #2b2b2b; --ink-dim: #b9b6ae;
+    --face-top: #ffffff; --face-left: #eceae5; --face-right: #dcd9d2;
+    --floor: #efede8; --belt: #474747; --belt-line: #6e6e6e;
+    --carton: #d9b382; --tape: #a8814f; --tyre: #2b2b2b; --truck: #3d5a80; --glass: #bcd4e6;
+    --text: #2b2b2b; --muted: #6f6c66; --line: #e2dfd8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121212; --panel: #1a1a1a; --ink: #e4e4e4; --ink-dim: #4a4a4a;
+      --face-top: #2b2b2b; --face-left: #232323; --face-right: #1b1b1b;
+      --floor: #181818; --belt: #0d0d0d; --belt-line: #3a3a3a;
+      --carton: #a9855a; --tape: #7d6240; --tyre: #0a0a0a; --truck: #4f6f99; --glass: #2c4a63;
+      --text: #ececec; --muted: #9a9a9a; --line: #2c2c2c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121212; --panel: #1a1a1a; --ink: #e4e4e4; --ink-dim: #4a4a4a;
+    --face-top: #2b2b2b; --face-left: #232323; --face-right: #1b1b1b;
+    --floor: #181818; --belt: #0d0d0d; --belt-line: #3a3a3a;
+    --carton: #a9855a; --tape: #7d6240; --tyre: #0a0a0a; --truck: #4f6f99; --glass: #2c4a63;
+    --text: #ececec; --muted: #9a9a9a; --line: #2c2c2c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.lede { margin: 0 0 16px; color: var(--muted); }
+  .stage { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  svg { display: block; width: 100%; height: auto; }
+  svg polygon, svg line, svg polyline { stroke: var(--ink); stroke-width: .7; stroke-linejoin: round; stroke-linecap: round; }
+  .t { fill: var(--face-top); } .l { fill: var(--face-left); } .r { fill: var(--face-right); }
+  .floor { fill: var(--floor); stroke: var(--ink-dim) !important; }
+  .dim { stroke: var(--belt-line) !important; }
+  .soft { stroke-opacity: .35; }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; margin-top: 14px; }
+  .group { display: flex; align-items: center; gap: 8px; }
+  .label { color: var(--muted); font-size: 13px; }
+  button { font: inherit; font-size: 13px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; min-height: 32px; }
+  button:hover { border-color: var(--muted); }
+  input[type="color"] { width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 8px; padding: 2px; background: var(--panel); cursor: pointer; }
+  input[type="range"] { width: 120px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 14px; font-variant-numeric: tabular-nums; }
+  .stats b { font-size: 18px; margin-right: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Factory line</h1>
+  <p class="lede">Sewing machines make garments, the belt carries them to packing, full cartons roll to the truck, and the truck leaves for export.</p>
+
+  <div class="stage">
+    <svg id="scene" role="img" aria-label="Animated isometric factory: sewing machines, conveyor belt, packing table, roller and export truck"></svg>
+  </div>
+
+  <div class="controls">
+    <div class="group"><button id="play" type="button">Pause</button></div>
+    <div class="group">
+      <span class="label" id="speed-label">Speed</span>
+      <input id="speed" type="range" min="0.5" max="3" step="0.25" value="1" aria-labelledby="speed-label">
+    </div>
+    <div class="group">
+      <span class="label">Cloth colours</span>
+      <span id="swatches" class="group"></span>
+      <button id="add-color" type="button" aria-label="Add a cloth colour">+</button>
+      <button id="remove-color" type="button" aria-label="Remove the last cloth colour">−</button>
+    </div>
+    <div class="group"><button id="theme" type="button">Theme</button></div>
+  </div>
+
+  <div class="stats" aria-live="polite">
+    <span><b id="made">0</b><span class="label">garments made</span></span>
+    <span><b id="packed">0</b><span class="label">cartons packed</span></span>
+    <span><b id="shipped">0</b><span class="label">trucks shipped</span></span>
+  </div>
+</main>
+
+<script>
+/* ===== Edit here: cloth colours (any CSS colour) and timing ===== */
+const CONFIG = {
+  clothColors: ["#e4572e", "#2e86ab", "#f2c14e", "#3bb273", "#8e5bd6"],
+  sewSeconds: 3.2,     // time one machine takes per garment
+  beltSpeed: 42,       // world units per second
+  perCarton: 3,        // garments per carton
+  machines: [18, 92, 166], // x position of each machine; add more to add machines
+};
+
+/* ---------- geometry ---------- */
+const K = Math.cos(Math.PI / 6);
+const prj = ([x, y, z]) => [(x - y) * K, (x + y) * 0.5 - z];
+const pt = (p) => { const [a, b] = prj(p); return a.toFixed(1) + "," + b.toFixed(1); };
+const poly = (pts, attr) => `<polygon points="${pts.map(pt).join(" ")}" ${attr}/>`;
+const line = (a, b, cls = "") => { const [x1, y1] = prj(a), [x2, y2] = prj(b); return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" class="${cls}"/>`; };
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const clamp01 = (t) => Math.max(0, Math.min(1, t));
+
+/** Fill for a face: neutral class, or a colour with darker sides. */
+function paint(c, face) {
+  if (!c) return `class="${face}"`;
+  const mix = face === "t" ? c : `color-mix(in srgb, ${c} ${face === "l" ? 80 : 64}%, #000)`;
+  return `style="fill:${mix}"`;
+}
+
+/** An axis-aligned box: top, +y (left) and +x (right) faces. */
+function box(x, y, z, w, d, h, c) {
+  const A = [x, y, z + h], B = [x + w, y, z + h], C = [x + w, y + d, z + h], D = [x, y + d, z + h];
+  const E = [x, y + d, z], F = [x + w, y + d, z], G = [x + w, y, z];
+  return poly([A, B, C, D], paint(c, "t")) + poly([D, C, F, E], paint(c, "l")) + poly([B, G, F, C], paint(c, "r"));
+}
+
+/** A disc standing in a plane: axis "x" or "y" is the constant one. */
+function disc(axis, k, cu, cz, r, attr) {
+  const pts = [];
+  for (let i = 0; i < 20; i++) {
+    const a = (i / 20) * Math.PI * 2, u = cu + r * Math.cos(a), z = cz + r * Math.sin(a);
+    pts.push(axis === "x" ? [k, u, z] : [u, k, z]);
+  }
+  return poly(pts, attr);
+}
+
+/** Convex hull of screen points (monotone chain). */
+function hull(ps) {
+  const p = ps.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], up = [];
+  for (const q of p) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (const q of p.reverse()) { while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  return lo.slice(0, -1).concat(up.slice(0, -1));
+}
+
+/** A thread cone, coloured like the cloth being sewn. */
+function cone(cx, cy, z0, r, h, c) {
+  const base = [];
+  for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; base.push(prj([cx + r * Math.cos(a), cy + r * Math.sin(a), z0])); }
+  const pts = hull(base.concat([prj([cx, cy, z0 + h])]));
+  return `<polygon points="${pts.map((q) => q[0].toFixed(1) + "," + q[1].toFixed(1)).join(" ")}" style="fill:${c}"/>`;
+}
+
+/* ---------- objects ---------- */
+const color = (i) => CONFIG.clothColors[i % CONFIG.clothColors.length];
+
+function garment(x, y, z, ci) {
+  const c = color(ci), top = z + 3;
+  return box(x, y, z, 20, 14, 3, c)
+    + `<polyline points="${[[x + 2, y + 4, top], [x + 5, y + 7, top], [x + 2, y + 10, top]].map(pt).join(" ")}" fill="none"/>`
+    + line([x + 11, y + 1, top], [x + 11, y + 13, top], "soft");
+}
+
+function machine(m, t) {
+  const x = m.x, c = color(m.ci);
+  let s = box(x - 4, -50, 0, 46, 36, 30) + box(x, -44, 30, 34, 14, 4);
+  if (m.state === "sew") s += box(x + 3 + (m.timer / CONFIG.sewSeconds) * 6, -43, 34, 16, 12, 1, c);
+  else s += garment(x + 7, -42, 34, m.ci);
+  const bob = m.state === "sew" ? 4 + 2 * Math.sin(t * 22 + x) : 2;
+  s += box(x + 2, -42.5, 41, 8, 10, 16) + line([x + 6, -37.5, 41], [x + 6, -37.5, 41 - bob]);
+  s += box(x + 26, -42, 34, 7, 9, 18) + box(x + 4, -43, 50, 30, 11, 7);
+  s += disc("x", x + 34.5, -37.5, 52, 5, 'class="r"') + disc("x", x + 34.6, -37.5, 52, 1.6, 'class="t"');
+  return s + cone(x + 18, -37.5, 57, 3.6, 11, c);
+}
+
+function belt(phase) {
+  let s = box(0, -8, 0, 252, 28, 28) + box(0, -8, 28, 252, 28, 2, "var(--belt)");
+  for (let k = 0; k < 18; k++) { const sx = (k * 14 + phase) % 252; s += line([sx, -8, 30], [sx, 20, 30], "dim"); }
+  return s;
+}
+
+function cartonOpen(x, y, z, items, dropping) {
+  const w = 26, d = 20, top = z + 12, flap = paint("var(--carton)", "r");
+  let s = poly([[x, y, top], [x - 6, y, top + 5], [x - 6, y + d, top + 5], [x, y + d, top]], flap);
+  s += poly([[x, y, top], [x + w, y, top], [x + w, y + d, top], [x, y + d, top]], `style="fill:color-mix(in srgb, var(--carton) 52%, #000)"`);
+  items.forEach((ci, k) => { s += garment(x + 3, y + 3, z + 1 + k * 3, ci); });
+  dropping.forEach((g) => { s += garment(g.x, g.y, g.z, g.ci); });
+  const D = [x, y + d, top], C = [x + w, y + d, top], F = [x + w, y + d, z], E = [x, y + d, z], B = [x + w, y, top], G = [x + w, y, z];
+  s += poly([D, C, F, E], paint("var(--carton)", "l")) + poly([B, G, F, C], paint("var(--carton)", "r"));
+  return s + poly([[x + w, y, top], [x + w, y + d, top], [x + w + 6, y + d, top + 5], [x + w + 6, y, top + 5]], flap);
+}
+
+function cartonClosed(x, y, z, items) {
+  let s = box(x, y, z, 26, 20, 12, "var(--carton)");
+  s += `<line x1="${prj([x, y + 10, z + 12])[0].toFixed(1)}" y1="${prj([x, y + 10, z + 12])[1].toFixed(1)}" x2="${prj([x + 26, y + 10, z + 12])[0].toFixed(1)}" y2="${prj([x + 26, y + 10, z + 12])[1].toFixed(1)}" style="stroke:var(--tape);stroke-width:2.2"/>`;
+  items.forEach((ci, k) => {
+    const tx = x + 3 + k * 6, f = y + 20;
+    s += poly([[tx, f, z + 3], [tx + 4, f, z + 3], [tx + 4, f, z + 7], [tx, f, z + 7]], `style="fill:${color(ci)}"`);
+  });
+  return s;
+}
+
+/* ---------- simulation ---------- */
+const PACK = { x: 260, y: -3, z: 14 }, SLOTS = [330, 300], BELT_END = 234;
+const CELLS = [];
+for (const z of [14, 26]) for (const x of [424, 396, 368]) for (const y of [-14, 8]) CELLS.push({ x, y, z });
+
+function freshState() {
+  return {
+    t: 0, made: 0, packed: 0, shipped: 0, next: 0, phase: 0,
+    machines: CONFIG.machines.map((x, i) => ({ x, state: "sew", timer: (i * CONFIG.sewSeconds) / CONFIG.machines.length, ci: i })),
+    garments: [],
+    pack: { state: "open", items: [], incoming: 0, t: 0 },
+    roller: [],
+    move: null,
+    truck: { state: "loading", dx: 0, t: 0, load: [] },
+  };
+}
+let S = freshState();
+S.next = CONFIG.machines.length;
+
+const landingClear = (lx) => S.garments.every((g) => g.state === "drop" || Math.abs((g.state === "chute" ? g.to[0] : g.x) - lx) >= 24);
+const packAccepts = () => S.pack.state === "open" && S.pack.items.length + S.pack.incoming < CONFIG.perCarton;
+
+function stepMachines(dt) {
+  for (const m of S.machines) {
+    if (m.state === "sew") { m.timer += dt; if (m.timer >= CONFIG.sewSeconds) m.state = "ready"; continue; }
+    const lx = m.x + 6;
+    if (!landingClear(lx)) continue;
+    S.garments.push({ ci: m.ci, state: "chute", t: 0, from: [m.x + 7, -42, 34], to: [lx, -1, 30], x: m.x + 7, y: -42, z: 34 });
+    S.made++;
+    m.state = "sew"; m.timer = 0; m.ci = S.next++;
+  }
+}
+
+function stepGarments(dt) {
+  const onBelt = S.garments.filter((g) => g.state === "belt").sort((a, b) => b.x - a.x);
+  let limit = BELT_END;
+  for (const g of onBelt) {
+    g.x = Math.min(g.x + CONFIG.beltSpeed * dt, limit);
+    if (g === onBelt[0] && g.x >= BELT_END - 0.01 && packAccepts()) {
+      const k = S.pack.items.length + S.pack.incoming++;
+      Object.assign(g, { state: "drop", t: 0, from: [g.x, g.y, g.z], to: [PACK.x + 3, PACK.y + 3, PACK.z + 1 + k * 3] });
+    }
+    limit = g.x - 23;
+  }
+  for (const g of S.garments) {
+    if (g.state === "belt") continue;
+    g.t += dt / (g.state === "chute" ? 0.6 : 0.35);
+    const e = ease(clamp01(g.t));
+    g.x = lerp(g.from[0], g.to[0], e); g.y = lerp(g.from[1], g.to[1], e);
+    g.z = lerp(g.from[2], g.to[2], e) + (g.state === "chute" ? Math.sin(Math.PI * e) * 6 : 0);
+    if (g.t < 1) continue;
+    if (g.state === "chute") { g.state = "belt"; g.z = 30; } else { g.done = true; S.pack.items.push(g.ci); S.pack.incoming--; }
+  }
+  S.garments = S.garments.filter((g) => !g.done);
+  if (S.pack.state === "open" && S.pack.items.length === CONFIG.perCarton) Object.assign(S.pack, { state: "closing", t: 0 });
+}
+
+function stepPacking(dt) {
+  const p = S.pack;
+  p.t += dt;
+  if (p.state === "arrive" && p.t >= 0.5) Object.assign(p, { state: "open", t: 0 });
+  if (p.state === "closing" && p.t >= 0.4) Object.assign(p, { state: "waiting", t: 0 });
+  if (p.state === "waiting" && S.roller.length < SLOTS.length) {
+    S.roller.push({ items: p.items, x: PACK.x });
+    S.packed++;
+    Object.assign(p, { state: "arrive", items: [], incoming: 0, t: 0 });
+  }
+  S.roller.forEach((c, i) => { c.x = Math.min(c.x + 80 * dt, SLOTS[i]); });
+}
+
+function stepTruck(dt) {
+  const tr = S.truck, r0 = S.roller[0];
+  if (tr.state === "loading" && !S.move && r0 && r0.x >= SLOTS[0] && tr.load.length < CELLS.length) {
+    S.move = { items: r0.items, cell: CELLS[tr.load.length], t: 0 };
+    S.roller.shift();
+  }
+  if (S.move) {
+    S.move.t += dt / 0.9;
+    if (S.move.t >= 1) {
+      tr.load.push({ items: S.move.items, cell: S.move.cell });
+      S.move = null;
+      if (tr.load.length === CELLS.length) Object.assign(tr, { state: "leaving", t: 0 });
+    }
+  }
+  tr.t += dt;
+  if (tr.state === "leaving") {
+    tr.dx = ease(clamp01(tr.t / 2.2)) * 380;
+    if (tr.t >= 2.2) { S.shipped++; Object.assign(tr, { state: "arriving", t: 0, load: [] }); }
+  } else if (tr.state === "arriving") {
+    tr.dx = (1 - ease(clamp01(tr.t / 2))) * 380;
+    if (tr.t >= 2) Object.assign(tr, { state: "loading", dx: 0 });
+  }
+}
+
+function step(dt) {
+  S.t += dt;
+  S.phase = (S.phase + CONFIG.beltSpeed * dt) % 14;
+  stepMachines(dt); stepGarments(dt); stepPacking(dt); stepTruck(dt);
+}
+
+/* ---------- render ---------- */
+function truck() {
+  const dx = S.truck.dx;
+  let s = box(370 + dx, -10, 3, 86, 34, 5, "var(--tyre)");
+  s += box(366 + dx, -16, 8, 90, 46, 6, "var(--truck)");
+  for (const wx of [384, 432]) s += disc("y", 30.5, wx + dx, 7, 7, `style="fill:var(--tyre)"`);
+  const loads = S.truck.load.slice().sort((a, b) => a.cell.x + a.cell.y - (b.cell.x + b.cell.y) || a.cell.z - b.cell.z);
+  for (const L of loads) s += cartonClosed(L.cell.x + dx, L.cell.y, L.cell.z, L.items);
+  if (S.move) {
+    const e = ease(clamp01(S.move.t)), c = S.move.cell;
+    s += cartonClosed(lerp(SLOTS[0], c.x, e), lerp(PACK.y, c.y, e), lerp(PACK.z, c.z, e) + Math.sin(Math.PI * e) * 16, S.move.items);
+  }
+  s += box(458 + dx, -16, 6, 28, 46, 38, "var(--truck)");
+  s += poly([[486 + dx, -11, 30], [486 + dx, 25, 30], [486 + dx, 25, 40], [486 + dx, -11, 40]], `style="fill:var(--glass)"`);
+  s += poly([[462 + dx, 30, 30], [480 + dx, 30, 30], [480 + dx, 30, 40], [462 + dx, 30, 40]], `style="fill:var(--glass)"`);
+  return s + disc("y", 30.5, 472 + dx, 7, 7, `style="fill:var(--tyre)"`);
+}
+
+function render() {
+  let s = poly([[-30, -62, 0], [500, -62, 0], [500, 44, 0], [-30, 44, 0]], 'class="floor"');
+  for (const m of S.machines) s += machine(m, S.t);
+  s += belt(S.phase);
+  const loose = S.garments.filter((g) => g.state !== "drop").sort((a, b) => a.x + a.y - (b.x + b.y));
+  for (const g of loose) s += garment(g.x, g.y, g.z, g.ci);
+  s += box(254, -6, 0, 40, 26, 14);
+  const p = S.pack, dropping = S.garments.filter((g) => g.state === "drop");
+  const py = p.state === "arrive" ? PACK.y + 40 * (1 - ease(clamp01(p.t / 0.5))) : PACK.y;
+  s += p.state === "closing" || p.state === "waiting" ? cartonClosed(PACK.x, py, PACK.z, p.items) : cartonOpen(PACK.x, py, PACK.z, p.items, dropping);
+  s += box(296, -6, 0, 68, 26, 14);
+  for (let x = 300; x < 364; x += 6) s += line([x, -6, 14], [x, 20, 14], "dim");
+  for (const c of S.roller.slice().reverse()) s += cartonClosed(c.x, PACK.y, PACK.z, c.items);
+  s += truck();
+  svg.innerHTML = s;
+  document.getElementById("made").textContent = S.made;
+  document.getElementById("packed").textContent = S.packed;
+  document.getElementById("shipped").textContent = S.shipped;
+}
+
+/* ---------- page ---------- */
+const svg = document.getElementById("scene");
+(function fitView() {
+  const corners = [[-30, -62, 0], [500, -62, 0], [500, 44, 0], [-30, 44, 0], [18, -50, 70], [458, -16, 46]].map(prj);
+  const xs = corners.map((c) => c[0]), ys = corners.map((c) => c[1]), pad = 12;
+  const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad;
+  svg.setAttribute("viewBox", `${x0.toFixed(0)} ${y0.toFixed(0)} ${(Math.max(...xs) - x0 + pad).toFixed(0)} ${(Math.max(...ys) - y0 + pad).toFixed(0)}`);
+})();
+
+const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+for (let i = 0; i < 14 * 30; i++) step(1 / 30); // warm up so the first frame is already busy
+let playing = !reduced, speed = 1, last = 0;
+const playBtn = document.getElementById("play");
+playBtn.textContent = playing ? "Pause" : "Play";
+
+function frame(now) {
+  const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
+  last = now;
+  if (!document.hidden) { step(dt * speed); render(); }
+  if (playing) requestAnimationFrame(frame); else last = 0;
+}
+render();
+if (playing) requestAnimationFrame(frame);
+
+playBtn.addEventListener("click", () => {
+  playing = !playing;
+  playBtn.textContent = playing ? "Pause" : "Play";
+  if (playing) requestAnimationFrame(frame);
+});
+document.getElementById("speed").addEventListener("input", (e) => { speed = Number(e.target.value); });
+document.getElementById("theme").addEventListener("click", () => {
+  const root = document.documentElement, dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+});
+
+function drawSwatches() {
+  const box = document.getElementById("swatches");
+  box.replaceChildren(...CONFIG.clothColors.map((c, i) => {
+    const input = document.createElement("input");
+    Object.assign(input, { type: "color", value: c });
+    input.setAttribute("aria-label", `Cloth colour ${i + 1}`);
+    input.addEventListener("input", () => { CONFIG.clothColors[i] = input.value; if (!playing) render(); });
+    return input;
+  }));
+}
+document.getElementById("add-color").addEventListener("click", () => {
+  const hue = Math.floor(Math.random() * 360), l = 55, s = 65;
+  const f = (n) => { const k = (n + hue / 30) % 12, a = (s / 100) * Math.min(l / 100, 1 - l / 100); return Math.round(255 * (l / 100 - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))).toString(16).padStart(2, "0"); };
+  CONFIG.clothColors.push("#" + f(0) + f(8) + f(4));
+  drawSwatches();
+});
+document.getElementById("remove-color").addEventListener("click", () => {
+  if (CONFIG.clothColors.length > 1) { CONFIG.clothColors.pop(); drawSwatches(); if (!playing) render(); }
+});
+drawSwatches();
+</script>
+</body>
+</html>
