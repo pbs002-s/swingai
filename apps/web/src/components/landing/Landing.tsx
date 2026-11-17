@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { Logo } from "@/components/Icon";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Hero } from "./Hero";
+import { SewingLine } from "./SewingLine";
 import { LeadForm } from "./LeadForm";
 import { useLandingMotion } from "./motion";
 import { FairUse, HowItWorks, Install, NeedleTracing } from "./Sections";
@@ -46,6 +48,7 @@ export function Landing() {
             ))}
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
             <Link href="/login" className="btn btn-ghost btn-sm">Log in</Link>
             <a href="#contact" className="btn btn-primary btn-sm hidden sm:inline-flex">Book a site survey</a>
           </div>
@@ -54,6 +57,7 @@ export function Landing() {
 
       <main id="main" className="relative z-10">
         <Hero />
+        <SewingLine />
         <HowItWorks />
         <NeedleTracing />
         <FairUse />
