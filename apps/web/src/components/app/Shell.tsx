@@ -17,7 +17,10 @@ const NAV: { href: string; key: MessageKey; icon: IconName }[] = [
   { href: "/app/floor", key: "liveFloor", icon: "floor" },
   { href: "/app/review", key: "reviewQueue", icon: "check" },
   { href: "/app/alerts", key: "alerts", icon: "alert" },
+  { href: "/app/cameras", key: "cameras", icon: "camera" },
   { href: "/app/needles", key: "needles", icon: "needle" },
+  { href: "/app/performance", key: "performance", icon: "bars" },
+  { href: "/app/setup", key: "setup", icon: "server" },
   { href: "/app/settings", key: "settings", icon: "settings" },
 ];
 
