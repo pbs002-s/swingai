@@ -1,0 +1,42 @@
+# Edge box stack: Mosquitto + collector + vision. Raw video never leaves this box.
+# Setup: cp .env.example .env, create mosquitto/passwd (see README), then: docker compose up -d
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports: ["1883:1883"]  # sensor VLAN only; do not expose to the internet
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/passwd:/mosquitto/config/passwd:ro
+      - mqtt-data:/mosquitto/data
+
+  collector:
+    build: .
+    restart: unless-stopped
+    depends_on: [mosquitto]
+    env_file: .env
+    environment:
+      MQTT_HOST: mosquitto
+      OUTBOX_PATH: /data/outbox.sqlite3
+    volumes: [edge-data:/data]
+
+  vision:
+    build: {context: ., dockerfile: Dockerfile.vision}
+    restart: unless-stopped
+    depends_on: [mosquitto, collector]
+    env_file: .env
+    environment:
+      MQTT_HOST: mosquitto
+      OUTBOX_PATH: /data/outbox.sqlite3  # same outbox as the collector (SQLite WAL)
+      EVIDENCE_DIR: /data
+      SS_DETECTOR_MODEL: /models/yolox_s.onnx
+      SS_POSE_MODEL: /models/pose_landmarker_lite.task
+    command: ["--config", "/config/camera.json", "--source", "${CAMERA_RTSP_URL:?set CAMERA_RTSP_URL in .env}"]
+    volumes:
+      - edge-data:/data
+      - ./models:/models:ro
+      - ./config:/config:ro
+
+volumes:
+  mqtt-data:
+  edge-data:
