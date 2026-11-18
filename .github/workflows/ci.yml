@@ -46,6 +46,19 @@ jobs:
       - run: npm audit --omit=dev --audit-level=high
       - run: npm run build
 
+  edge:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: edge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+
   e2e:
     needs: [api, web]
     runs-on: ubuntu-latest
