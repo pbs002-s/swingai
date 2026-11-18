@@ -19,7 +19,7 @@ test("overview shows the shift, all lines, alerts and devices", async ({ page })
   await login(page);
   await expect(page.getByRole("region", { name: "Shift summary" })).toContainText("SMV efficiency");
   const lines = page.getByRole("table").first().getByRole("row");
-  await expect(lines).toHaveCount(7); // header + 6 lines
+  await expect.poll(() => lines.count()).toBeGreaterThanOrEqual(7); // header + the 6 demo lines (setup tests may add more)
   await expect(page.getByRole("heading", { name: "Alert center" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Devices" })).toBeVisible();
   await expect(page.getByText("live", { exact: true })).toBeVisible();
