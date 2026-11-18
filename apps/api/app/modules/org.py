@@ -11,8 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.audit import audit
 from app.core.db import get_session, utcnow
 from app.core.errors import AppError, not_found, ok
-from app.core.security import check_line_scope, client_ip, current_user, require_roles
+from app.core.security import check_line_scope, client_ip, current_user, new_token, require_roles, sha256
 from app.models import (
+    Device,
     Factory,
     Floor,
     Line,
@@ -204,3 +205,44 @@ async def production_entry(
     audit(db, user.id, "production.create", "production_entry", pe.id, body.model_dump(mode="json"), client_ip(request))
     await db.commit()
     return ok({"id": pe.id})
+
+
+@router.post("/devices/{device_id}/rotate-token")
+async def rotate_device_token(
+    device_id: int,
+    request: Request,
+    db: AsyncSession = Depends(get_session),
+    user: User = Depends(require_roles("system_admin")),
+):
+    """Issue a new device token. It is shown once; only its hash is stored, and the old token stops working."""
+    device = await db.get(Device, device_id)
+    if device is None:
+        raise not_found("Device")
+    token = new_token()
+    device.token_hash = sha256(token)
+    audit(db, user.id, "device.rotate_token", "device", device.id, ip=client_ip(request))
+    await db.commit()
+    return ok({"device": device.code, "token": token})
+
+
+@router.get("/devices")
+async def list_devices(
+    kind: str | None = None, db: AsyncSession = Depends(get_session), _: User = Depends(require_roles("factory_admin"))
+):
+    q = select(Device).order_by(Device.code)
+    if kind:
+        q = q.where(Device.kind == kind)
+    rows = (await db.execute(q.limit(1000))).scalars()
+    return ok(
+        [
+            {
+                "id": d.id,
+                "code": d.code,
+                "kind": d.kind,
+                "station_id": d.station_id,
+                "is_active": d.is_active,
+                "last_seen_at": d.last_seen_at.isoformat() if d.last_seen_at else None,
+            }
+            for d in rows
+        ]
+    )
