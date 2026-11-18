@@ -205,3 +205,18 @@ async def test_roles_and_line_scope(supervisor, manager, perf_data):
     assert _rows(await scoped.get(f"/performance?group={perf_data['op']}")) == {}
     assert (await scoped.get(f"/performance?line_id={perf_data['line']}")).status_code == 403
     await scoped.aclose()
+
+
+def test_each_day_uses_the_shift_version_in_force_that_day():
+    from datetime import UTC
+
+    from app.modules.performance import _shift_at
+
+    day = {"start": "08:00", "end": "17:00"}
+    night = {"start": "21:00", "end": "06:00", "crosses_midnight": True}
+    d = lambda n: datetime(2026, 11, n, tzinfo=UTC)  # noqa: E731
+    versions = [(d(1), d(10), day), (d(10), None, night)]
+    assert _shift_at(versions, d(5))["start"] == "08:00"  # history keeps its own schedule
+    assert _shift_at(versions, d(12))["start"] == "21:00"
+    assert _shift_at(versions, datetime(2026, 10, 1, tzinfo=UTC))["start"] == "08:00"  # before any version
+    assert _shift_at([], d(5))["start"]  # no policy at all: the default shift
