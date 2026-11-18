@@ -32,6 +32,8 @@ services:
       SS_ADMIN_EMAIL: ${SS_ADMIN_EMAIL:-admin@stitchsense.local}
       SS_ADMIN_PASSWORD: ${SS_ADMIN_PASSWORD:?set SS_ADMIN_PASSWORD in deploy/.env}
       SS_SIMULATOR_ENABLED: ${SS_SIMULATOR_ENABLED:-false}
+      SS_SEED_DEMO: ${SS_SEED_DEMO:-false}
+      SS_SECRETS_KEY: ${SS_SECRETS_KEY:?set SS_SECRETS_KEY in deploy/.env}
 
   web:
     build:
