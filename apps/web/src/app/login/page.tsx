@@ -1,4 +1,5 @@
 "use client";
+import { T } from "@/lib/i18n";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,8 +44,8 @@ export default function LoginPage() {
           <span className="text-[19px] font-semibold tracking-[-0.02em]">StitchSense</span>
         </Link>
         <div className="panel p-7 shadow-[0_24px_60px_-32px_rgb(20_22_25/0.4)]">
-          <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Log in</h1>
-          <p className="mt-1 text-[14px] text-ink-3">Staff accounts only. Ask your factory admin for access.</p>
+          <h1 className="text-[22px] font-semibold tracking-[-0.02em]"><T>Log in</T></h1>
+          <p className="mt-1 text-[14px] text-ink-3"><T>Staff accounts only. Ask your factory admin for access.</T></p>
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <label className="flex flex-col gap-1.5 text-[14px] font-medium">
               Email

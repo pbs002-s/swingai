@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ApiFailure, post } from "@/lib/api";
 import type { Alert } from "@/lib/api";
 import { useApi, useLiveStream, useThrottled } from "@/lib/hooks";
-import { useI18n } from "@/lib/i18n";
+import { T, useI18n } from "@/lib/i18n";
 import { Empty, ErrorBox, LiveDot, Loading, PageHeader, SeverityMark, fmtTime } from "@/components/app/ui";
 
 const FILTERS = [
@@ -47,7 +47,7 @@ export default function AlertsPage() {
               onClick={() => setSeverity(f.key)}
               className={`btn btn-sm ${severity === f.key ? "btn-primary" : "btn-ghost"}`}
             >
-              {f.label}
+              <T>{f.label}</T>
               {f.key && counts ? <span className="font-mono opacity-70">{counts[f.key as "critical"] ?? 0}</span> : null}
             </button>
           ))}
@@ -55,7 +55,7 @@ export default function AlertsPage() {
         <div role="group" aria-label="Status" className="ml-auto flex overflow-hidden rounded-lg border border-line-2 text-[13px]">
           {(["active", "resolved"] as const).map((s) => (
             <button key={s} type="button" aria-pressed={status === s} onClick={() => setStatus(s)} className={`min-h-9 px-3 capitalize ${status === s ? "bg-ink text-bg" : "text-ink-2 hover:bg-sunk"}`}>
-              {s}
+              <T>{s === "active" ? "Active" : "Resolved"}</T>
             </button>
           ))}
         </div>

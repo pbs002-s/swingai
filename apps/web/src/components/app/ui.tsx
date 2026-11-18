@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import type { TileState } from "@/lib/api";
-import { useI18n } from "@/lib/i18n";
+import { T, useI18n } from "@/lib/i18n";
 import type { MessageKey } from "@/lib/i18n";
 
 export const STATE_META: Record<TileState, { key: MessageKey; tile: string; swatch: string; mark: string }> = {
@@ -32,8 +32,8 @@ export function PageHeader({ title, sub, actions }: { title: string; sub?: React
   return (
     <div className="mb-6 flex flex-wrap items-end gap-x-6 gap-y-3">
       <div className="flex flex-col gap-1">
-        <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.03em]">{title}</h1>
-        {sub && <p className="text-[14px] text-ink-3">{sub}</p>}
+        <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.03em]"><T>{title}</T></h1>
+        {sub && <p className="text-[14px] text-ink-3">{typeof sub === "string" ? <T>{sub}</T> : sub}</p>}
       </div>
       {actions && <div className="ml-auto flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
@@ -77,8 +77,8 @@ export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () =
 export function Empty({ title, text }: { title: string; text: string }) {
   return (
     <div className="flex flex-col items-center gap-1 px-6 py-12 text-center">
-      <span className="text-[15px] font-medium">{title}</span>
-      <span className="max-w-[40ch] text-[14px] text-ink-3">{text}</span>
+      <span className="text-[15px] font-medium"><T>{title}</T></span>
+      <span className="max-w-[40ch] text-[14px] text-ink-3"><T>{text}</T></span>
     </div>
   );
 }

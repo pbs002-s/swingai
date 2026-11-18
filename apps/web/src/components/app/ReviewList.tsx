@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ApiFailure, post } from "@/lib/api";
 import type { ReviewItem } from "@/lib/api";
 import { useApi, useLiveStream, useThrottled } from "@/lib/hooks";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, T } from "@/lib/i18n";
 import { Empty, ErrorBox, fmtTime } from "./ui";
 
 const RECLASSIFY: Record<string, { value: string; label: string }[]> = {
@@ -56,7 +56,7 @@ export function ReviewList({ lineId, compact = false }: { lineId?: number; compa
       <div className="flex items-center gap-2 border-b border-line px-5 py-3.5">
         <h2 id="queue-h" className="text-[15px] font-semibold">{t("reviewQueue")}</h2>
         <span className="font-mono text-[13px] text-ink-3">{items.length}{compact && items.length === 4 ? "+" : ""}</span>
-        {compact && <Link href="/app/review" className="link-draw ml-auto text-[13px] text-brand">Open queue</Link>}
+        {compact && <Link href="/app/review" className="link-draw ml-auto text-[13px] text-brand"><T>Open queue</T></Link>}
       </div>
       {error && <div className="p-4"><ErrorBox message={error.message} onRetry={refresh} /></div>}
       {failure && <div className="px-5 pt-3"><ErrorBox message={failure} /></div>}

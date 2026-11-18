@@ -1,4 +1,5 @@
 "use client";
+import { T } from "@/lib/i18n";
 
 import { useState } from "react";
 import { ApiFailure, patch, post } from "@/lib/api";
@@ -60,9 +61,9 @@ function RuleRow({ rule, canEdit, onSaved }: { rule: AlertRule; canEdit: boolean
           onChange={(e) => setDraft({ ...draft, severity: e.target.value as AlertRule["severity"] })}
           className="field min-h-9 w-[110px] px-2 text-[14px]"
         >
-          <option value="critical">Critical</option>
-          <option value="warning">Warning</option>
-          <option value="info">Info</option>
+          <option value="critical"><T>Critical</T></option>
+          <option value="warning"><T>Warning</T></option>
+          <option value="info"><T>Info</T></option>
         </select>
       </label>
       <label className="flex min-h-9 cursor-pointer items-center gap-2 text-[13px]">
@@ -94,7 +95,7 @@ function SimulatorCard() {
   return (
     <section aria-labelledby="sim-h" className="panel flex flex-wrap items-center gap-4 p-5">
       <div className="flex min-w-[240px] flex-1 flex-col gap-1">
-        <h2 id="sim-h" className="text-[15px] font-semibold">Factory simulator</h2>
+        <h2 id="sim-h" className="text-[15px] font-semibold"><T>Factory simulator</T></h2>
         <p className="text-[13px] text-ink-3">Generates realistic station events for demos and training. Turn it off in a live factory.</p>
       </div>
       <span className={`rounded-md px-2 py-0.5 text-[12px] font-medium ${sim.data?.running ? "bg-run-bg text-run" : "bg-off-bg text-ink-2"}`}>
@@ -118,7 +119,7 @@ export default function SettingsPage() {
       <div className="flex max-w-[1000px] flex-col gap-5">
         {canEdit && <SimulatorCard />}
         <section aria-labelledby="rules-h" className="panel overflow-hidden">
-          <div className="border-b border-line px-5 py-3.5"><h2 id="rules-h" className="text-[15px] font-semibold">Alert rules</h2></div>
+          <div className="border-b border-line px-5 py-3.5"><h2 id="rules-h" className="text-[15px] font-semibold"><T>Alert rules</T></h2></div>
           {rules.error && <div className="p-4"><ErrorBox message={rules.error.message} onRetry={rules.refresh} /></div>}
           {rules.loading && !rules.data ? <div className="p-4"><Loading /></div> : (
             <ul>{rules.data?.map((r) => <RuleRow key={r.id} rule={r} canEdit={canEdit} onSaved={rules.refresh} />)}</ul>

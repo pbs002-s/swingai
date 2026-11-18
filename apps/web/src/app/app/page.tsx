@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useApi, useLiveStream, useThrottled } from "@/lib/hooks";
 import type { Alert, Overview, TileState } from "@/lib/api";
 import { post } from "@/lib/api";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, T } from "@/lib/i18n";
 import { ErrorBox, Legend, LiveDot, Loading, PageHeader, SeverityMark, fmtTime, num, pct } from "@/components/app/ui";
 
 const ORDER: TileState[] = ["running", "idle", "down", "break", "no_data"];
@@ -41,18 +41,18 @@ function Lines({ o }: { o: Overview }) {
   return (
     <section aria-labelledby="lines-h" className="panel min-w-0 overflow-hidden">
       <div className="flex flex-wrap items-center gap-3 border-b border-line px-5 py-3.5">
-        <h2 id="lines-h" className="text-[15px] font-semibold">Lines</h2>
+        <h2 id="lines-h" className="text-[15px] font-semibold"><T>Lines</T></h2>
         <Legend />
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-[14px]">
           <thead>
             <tr className="text-left text-[12px] text-ink-3">
-              <th className="px-5 py-2.5 font-medium">Line</th>
-              <th className="px-2 py-2.5 font-medium">Stations</th>
-              <th className="px-2 py-2.5 text-right font-medium">Output / target</th>
-              <th className="px-2 py-2.5 text-right font-medium">Efficiency</th>
-              <th className="px-5 py-2.5 font-medium">Alerts</th>
+              <th className="px-5 py-2.5 font-medium"><T>Line</T></th>
+              <th className="px-2 py-2.5 font-medium"><T>Stations</T></th>
+              <th className="px-2 py-2.5 text-right font-medium"><T>Output / target</T></th>
+              <th className="px-2 py-2.5 text-right font-medium"><T>Efficiency</T></th>
+              <th className="px-5 py-2.5 font-medium"><T>Alerts</T></th>
             </tr>
           </thead>
           <tbody>
@@ -79,7 +79,7 @@ function Lines({ o }: { o: Overview }) {
                     {alerts ? (
                       <span className={`rounded-md px-2 py-0.5 text-[12px] font-medium ${l.open_alerts.critical ? "bg-down-bg text-down" : "bg-idle-bg text-idle"}`}>{alerts} open</span>
                     ) : (
-                      <span className="text-[12px] text-ink-3">None</span>
+                      <span className="text-[12px] text-ink-3"><T>None</T></span>
                     )}
                   </td>
                 </tr>
@@ -104,8 +104,8 @@ function AlertFeed() {
   return (
     <section aria-labelledby="alerts-h" className="panel min-w-0 overflow-hidden">
       <div className="flex items-center border-b border-line px-5 py-3.5">
-        <h2 id="alerts-h" className="text-[15px] font-semibold">Alert center</h2>
-        <Link href="/app/alerts" className="link-draw ml-auto text-[13px] text-brand">All alerts</Link>
+        <h2 id="alerts-h" className="text-[15px] font-semibold"><T>Alert center</T></h2>
+        <Link href="/app/alerts" className="link-draw ml-auto text-[13px] text-brand"><T>All alerts</T></Link>
       </div>
       <ul>
         {(data ?? []).map((a) => (
@@ -118,11 +118,11 @@ function AlertFeed() {
             {a.status === "open" ? (
               <button type="button" className="btn btn-ghost btn-sm" onClick={() => ack(a.id)}>{t("acknowledge")}</button>
             ) : (
-              <span className="pt-1 text-[12px] text-ink-3">Acknowledged</span>
+              <span className="pt-1 text-[12px] text-ink-3"><T>Acknowledged</T></span>
             )}
           </li>
         ))}
-        {data && data.length === 0 && <li className="px-5 py-10 text-center text-[14px] text-ink-3">No open alerts. The floor is quiet.</li>}
+        {data && data.length === 0 && <li className="px-5 py-10 text-center text-[14px] text-ink-3"><T>No open alerts. The floor is quiet.</T></li>}
       </ul>
     </section>
   );
@@ -134,9 +134,9 @@ function Hourly({ o }: { o: Overview }) {
   return (
     <section aria-labelledby="hourly-h" className="panel min-w-0 p-5">
       <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-1">
-        <h2 id="hourly-h" className="text-[15px] font-semibold">Output by hour</h2>
-        <span className="flex items-center gap-1.5 text-[12px] text-ink-3"><span className="size-2.5 rounded-[3px] bg-brand" />Confirmed units</span>
-        <span className="flex items-center gap-1.5 text-[12px] text-ink-3"><span className="w-4 border-t-2 border-dashed border-ink" />Target pace</span>
+        <h2 id="hourly-h" className="text-[15px] font-semibold"><T>Output by hour</T></h2>
+        <span className="flex items-center gap-1.5 text-[12px] text-ink-3"><span className="size-2.5 rounded-[3px] bg-brand" /><T>Confirmed units</T></span>
+        <span className="flex items-center gap-1.5 text-[12px] text-ink-3"><span className="w-4 border-t-2 border-dashed border-ink" /><T>Target pace</T></span>
       </div>
       <div role="img" aria-label={`Output by hour: ${o.hourly.map((h) => `${h.hour} ${h.output}`).join(", ")}`} className="relative grid h-[200px] items-end gap-2" style={{ gridTemplateColumns: `repeat(${o.hourly.length}, minmax(0, 1fr))` }}>
         <div aria-hidden="true" className="absolute inset-x-0 border-t-2 border-dashed border-ink/50" style={{ bottom: `${(perHour / max) * 100}%` }} />
@@ -158,7 +158,7 @@ function Devices({ o }: { o: Overview }) {
   const names: Record<string, string> = { camera: "Cameras", machine_sensor: "Machine sensors", edge_box: "Edge boxes", card_reader: "Card readers" };
   return (
     <section aria-labelledby="dev-h" className="panel p-5">
-      <h2 id="dev-h" className="mb-2 text-[15px] font-semibold">Devices</h2>
+      <h2 id="dev-h" className="mb-2 text-[15px] font-semibold"><T>Devices</T></h2>
       {o.devices.map((d) => {
         const off = d.total - d.online;
         return (

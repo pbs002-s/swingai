@@ -1,4 +1,5 @@
 "use client";
+import { T } from "@/lib/i18n";
 
 import { useState } from "react";
 import { ApiFailure, post } from "@/lib/api";
@@ -44,19 +45,19 @@ export default function NeedlesPage() {
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
           <section aria-labelledby="lots-h" className="panel min-w-0 overflow-hidden">
             <div className="flex items-center border-b border-line px-5 py-3.5">
-              <h2 id="lots-h" className="text-[15px] font-semibold">Lots by breaks per 1,000 running hours</h2>
+              <h2 id="lots-h" className="text-[15px] font-semibold"><T>Lots by breaks per 1,000 running hours</T></h2>
               <span className="ml-auto text-[12px] text-ink-3">alert at {ALERT_AT}</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] border-collapse text-[14px]">
                 <thead>
                   <tr className="text-left text-[12px] text-ink-3">
-                    <th className="px-5 py-2.5 font-medium">Lot</th>
+                    <th className="px-5 py-2.5 font-medium"><T>Lot</T></th>
                     <th className="px-2 py-2.5 font-medium">Supplier · model</th>
-                    <th className="px-2 py-2.5 text-right font-medium">Issued</th>
-                    <th className="px-2 py-2.5 text-right font-medium">Breaks</th>
-                    <th className="w-[30%] px-2 py-2.5 font-medium">Rate</th>
-                    <th className="px-5 py-2.5 font-medium">Pattern</th>
+                    <th className="px-2 py-2.5 text-right font-medium"><T>Issued</T></th>
+                    <th className="px-2 py-2.5 text-right font-medium"><T>Breaks</T></th>
+                    <th className="w-[30%] px-2 py-2.5 font-medium"><T>Rate</T></th>
+                    <th className="px-5 py-2.5 font-medium"><T>Pattern</T></th>
                   </tr>
                 </thead>
                 <tbody>
