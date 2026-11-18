@@ -17,7 +17,12 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (t: number) => Math.max(0, Math.min(1, t));
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
-export const CLOTH = ["#1e4fd8", "#e4572e", "#f2c14e", "#2f9e66", "#8a5a3b"];
+export const DEFAULT_CLOTH = ["#1e4fd8", "#e4572e", "#f2c14e", "#2f9e66", "#8a5a3b"];
+let CLOTH: string[] = [...DEFAULT_CLOTH];
+/** Change the cloth colours the machines sew with; garments already made keep their slot index. */
+export function setCloth(colors: string[]) {
+  if (colors.length) CLOTH = colors.filter((c) => /^#[0-9a-f]{6}$/i.test(c));
+}
 const FACE_T = "var(--surface)";
 const FACE_L = "color-mix(in srgb, var(--surface) 90%, var(--ink))";
 const FACE_R = "color-mix(in srgb, var(--surface) 80%, var(--ink))";

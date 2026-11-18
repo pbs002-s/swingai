@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { DEFAULT_CLOTH, setCloth } from "./factory-sim";
 import { FactoryScene } from "./FactoryScene";
 
 function Counter({ value, label }: { value: number; label: string }) {
@@ -9,6 +10,31 @@ function Counter({ value, label }: { value: number; label: string }) {
     <div className="flex flex-col">
       <span className="font-mono text-[22px] font-medium tabular tracking-tight text-ink">{value.toLocaleString("en-US")}</span>
       <span className="text-[13px] text-ink-3">{label}</span>
+    </div>
+  );
+}
+
+function ClothColours() {
+  const [colors, setColors] = useState<string[]>(DEFAULT_CLOTH);
+  const change = (i: number, value: string) => {
+    const next = colors.map((c, k) => (k === i ? value : c));
+    setColors(next);
+    setCloth(next);
+  };
+  return (
+    <div className="flex items-center gap-2 px-3 pt-3">
+      <span className="text-[12px] text-ink-3">Cloth colours</span>
+      <div role="group" aria-label="Cloth colours" className="flex gap-1.5">
+        {colors.map((c, i) => (
+          <label key={i} className="relative grid size-7 cursor-pointer place-items-center rounded-full transition-transform hover:scale-110">
+            <span className="size-5 rounded-full ring-1 ring-line-2" style={{ background: c }} />
+            <input type="color" value={c} onChange={(e) => change(i, e.target.value)} aria-label={`Cloth colour ${i + 1}`} className="absolute inset-0 cursor-pointer opacity-0" />
+          </label>
+        ))}
+      </div>
+      <button type="button" className="link-draw ml-auto text-[12px] text-ink-3 hover:text-ink" onClick={() => { setColors(DEFAULT_CLOTH); setCloth(DEFAULT_CLOTH); }}>
+        Reset
+      </button>
     </div>
   );
 }
@@ -50,6 +76,7 @@ export function Hero() {
             <div className="overflow-hidden rounded-[14px] bg-bg">
               <FactoryScene onStats={setStats} className="block h-auto w-full" />
             </div>
+            <ClothColours />
             <div className="grid grid-cols-3 gap-4 border-t border-line px-3 pt-3 mt-2">
               <Counter value={stats.made} label="garments sewn" />
               <Counter value={stats.packed} label="cartons packed" />
