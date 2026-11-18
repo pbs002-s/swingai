@@ -59,7 +59,12 @@ async def run(settings: Settings) -> None:
     async with httpx.AsyncClient(timeout=httpx.Timeout(15.0, connect=5.0)) as client:
         sender = Sender(client, outbox, settings.api_url, settings.device_token)
         control = Control(
-            client, settings.api_url, settings.device_token, outbox, converter, settings.config_cache_path,
+            client,
+            settings.api_url,
+            settings.device_token,
+            outbox,
+            converter,
+            settings.config_cache_path,
             settings.go2rtc_url,
         )
         bridge.start()

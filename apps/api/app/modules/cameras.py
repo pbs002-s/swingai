@@ -196,7 +196,8 @@ class ZonesIn(BaseModel):
 FRAME_MAX_BYTES = 300 * 1024
 FRAME_FRESH_S = 10.0
 SEEN_WRITE_EVERY_S = 30.0
-_frames: dict[int, tuple[bytes, float]] = {}  # ponytail: in-process, newest frame only; use a shared store if the API ever runs multi-process
+# ponytail: in-process, newest frame only; use a shared store if the API ever runs multi-process
+_frames: dict[int, tuple[bytes, float]] = {}
 _seen_written: dict[int, float] = {}
 
 
@@ -360,20 +361,16 @@ async def get_job(box_id: int, job_id: int, db: AsyncSession = Depends(get_sessi
 
 
 @router.get("/cameras/live")
-async def live_cameras(
-    request: Request, db: AsyncSession = Depends(get_session), user: User = Depends(live_viewers)
-):
+async def live_cameras(request: Request, db: AsyncSession = Depends(get_session), user: User = Depends(live_viewers)):
     """Cameras with a player URL for the live wall. Video is served by the edge box (go2rtc) on the factory LAN,
     never by this server; a camera with no edge live_base shows a labelled simulated feed in demo mode."""
-    cams = list(
-        (await db.execute(select(Device).where(Device.kind == "camera", Device.is_active).order_by(Device.id))).scalars()
-    )
+    cams = list((await db.execute(select(Device).where(Device.kind == "camera", Device.is_active).order_by(Device.id))).scalars())
     codes = await _codes(db, cams)
     boxes = {b.id: b for b in (await db.execute(select(Device).where(Device.kind == "edge_box"))).scalars()}
     demo = get_settings().simulator_enabled
     out = []
     for c in cams:
-        base = (boxes.get(c.config.get("edge_box_id")).config.get("live_base") if c.config.get("edge_box_id") in boxes else None)
+        base = boxes.get(c.config.get("edge_box_id")).config.get("live_base") if c.config.get("edge_box_id") in boxes else None
         if c.config.get("test_source"):
             live = {"mode": "frames", "url": f"/api/v1/cameras/{c.id}/frame.jpg"}
         elif base and c.config.get("connection"):

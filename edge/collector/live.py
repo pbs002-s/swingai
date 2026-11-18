@@ -13,7 +13,9 @@ log = logging.getLogger(__name__)
 
 
 def rtsp_url(conn: dict[str, Any]) -> str:
-    auth = f"{quote(conn['username'], safe='')}:{quote(conn.get('password', ''), safe='')}@" if conn.get("username") else ""
+    auth = ""
+    if conn.get("username"):
+        auth = f"{quote(conn['username'], safe='')}:{quote(conn.get('password', ''), safe='')}@"
     return f"rtsp://{auth}{conn['host']}:{conn.get('port', 554)}{conn.get('rtsp_path', '/')}"
 
 
@@ -24,9 +26,8 @@ async def register_streams(client: httpx.AsyncClient, go2rtc_url: str, cameras: 
         if not cam.get("connection"):
             continue
         try:
-            resp = await client.put(
-                f"{go2rtc_url.rstrip('/')}/api/streams", params={"name": cam["code"], "src": rtsp_url(cam["connection"])}
-            )
+            params = {"name": cam["code"], "src": rtsp_url(cam["connection"])}
+            resp = await client.put(f"{go2rtc_url.rstrip('/')}/api/streams", params=params)
             done += resp.is_success
         except httpx.HTTPError as exc:
             log.warning("go2rtc register %s failed: %s", cam["code"], exc.__class__.__name__)
