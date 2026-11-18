@@ -1,0 +1,3 @@
+asset_code,factory_code,machine_type,brand,model,serial,station_code,status
+M-0001,F1,Lockstitch,Juki,DDL-9000C,SN123456,L1-S001,active
+M-0002,F1,Overlock,Jack,E4S,SN998877,L1-S002,active

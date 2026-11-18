@@ -1,0 +1,3 @@
+employee_code,card_id,punch_time,direction,device
+E-1001,04A1B2C3,2026-11-17 07:52,in,Gate-1
+E-1001,04A1B2C3,2026-11-17 17:04,out,Gate-1
