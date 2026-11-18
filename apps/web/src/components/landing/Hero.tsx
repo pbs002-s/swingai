@@ -83,11 +83,11 @@ export function Hero() {
               <Counter value={stats.shipped} label="trucks shipped" />
             </div>
           </div>
-          <div aria-hidden="true" className="float-a absolute -left-6 top-16 hidden rounded-xl border border-line bg-surface/95 px-3 py-2 text-[12px] shadow-lg backdrop-blur sm:block">
+          <div aria-hidden="true" className="float-a absolute -right-4 top-14 hidden rounded-xl border border-line bg-surface/95 px-3 py-2 text-[12px] shadow-lg backdrop-blur sm:block">
             <span className="flex items-center gap-2 font-medium text-ink"><span className="size-2 rotate-45 bg-down" />Machine stopped 12 min</span>
             <span className="font-mono text-ink-3">L3-S12 · 09:30</span>
           </div>
-          <div aria-hidden="true" className="float-b absolute -right-4 bottom-24 hidden rounded-xl border border-line bg-surface/95 px-3 py-2 text-[12px] shadow-lg backdrop-blur sm:block">
+          <div aria-hidden="true" className="float-b absolute -left-6 bottom-24 hidden rounded-xl border border-line bg-surface/95 px-3 py-2 text-[12px] shadow-lg backdrop-blur sm:block">
             <span className="flex items-center gap-2 font-medium text-ink"><span className="size-0 border-x-[5px] border-b-[9px] border-x-transparent border-b-idle" />Possible phone use</span>
             <span className="font-mono text-ink-3">0.87 · waiting for review</span>
           </div>
