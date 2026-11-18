@@ -39,7 +39,7 @@ from app.models import Factory, Operation, Policy, PolicyVersion, ProductionEntr
 from app.modules.shift import DEFAULT_SHIFT, DEFAULT_THRESHOLDS, ShiftWindow, policy_body, window_for
 
 router = APIRouter(tags=["performance"])
-VIEWERS = ("management", "factory_admin", "supervisor")
+VIEWERS = ("management", "factory_admin")  # rankings are sensitive: management reviews them, supervisors do not (PRD §5)
 COMPONENTS = ("production", "quality", "time")
 DEFAULT_RANKING: dict[str, Any] = {
     "weights": {"production": 50, "quality": 35, "time": 15},

@@ -14,6 +14,7 @@ from typing import Any
 
 import httpx
 
+from collector.live import register_streams
 from collector.mqtt_bridge import Converter
 from collector.outbox import Outbox
 
@@ -43,11 +44,13 @@ class Control:
         outbox: Outbox,
         converter: Converter,
         cache_path: str | Path,
+        go2rtc_url: str = "",
     ):
         self.client, self.outbox, self.converter = client, outbox, converter
         self.base = api_url.rstrip("/")
         self.headers = {"Authorization": f"Bearer {token}"}
         self.cache_path = Path(cache_path)
+        self.go2rtc_url = go2rtc_url
         self.config: dict[str, Any] | None = self._load_cache()
         self._config_missing_logged = False
 
@@ -89,3 +92,5 @@ class Control:
             os.replace(tmp, self.cache_path)  # atomic, so the vision process never reads half a file
             self.config = config
             log.info("edge config updated")
+        if self.go2rtc_url and self.config:
+            await register_streams(self.client, self.go2rtc_url, self.config.get("cameras", []))

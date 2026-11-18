@@ -12,7 +12,7 @@ from app.core import bus
 from app.core.audit import audit
 from app.core.db import get_session, utcnow
 from app.core.errors import AppError, not_found, ok
-from app.core.security import check_line_scope, client_ip, current_user, require_roles
+from app.core.security import check_line_scope, client_ip, require_roles
 from app.models import Event, EventReview, Line, Station, User, Worker
 from app.models.events import EVENT_STATES
 
@@ -39,7 +39,10 @@ async def _next_start(db: AsyncSession, e: Event) -> Any:
 
 @router.get("/review-queue")
 async def review_queue(
-    line_id: int | None = None, limit: int = 50, db: AsyncSession = Depends(get_session), _: User = Depends(current_user)
+    line_id: int | None = None,
+    limit: int = 50,
+    db: AsyncSession = Depends(get_session),
+    _: User = Depends(require_roles(*REVIEWERS)),
 ):
     limit = max(1, min(limit, 200))
     q = (

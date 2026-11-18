@@ -99,19 +99,23 @@ async def ensure_admin(db: AsyncSession) -> None:
     await db.commit()
 
 
+DEMO_PEOPLE = [  # one login per role, so each role's access can be tried on its own
+    ("supervisor@stitchsense.local", "Line supervisor", ["supervisor"]),
+    ("quality@stitchsense.local", "Quality manager", ["quality"]),
+    ("maintenance@stitchsense.local", "Maintenance lead", ["maintenance"]),
+    ("manager@stitchsense.local", "Factory manager", ["management"]),
+]
+
+
 async def _demo_users(db: AsyncSession) -> None:
-    """Demo logins (never created in production; see Settings)."""
-    people = [
-        ("supervisor@stitchsense.local", "Line supervisor", ["supervisor"]),
-        ("quality@stitchsense.local", "Quality manager", ["quality", "maintenance"]),
-        ("manager@stitchsense.local", "Factory manager", ["management"]),
-    ]
-    for email, name, roles in people:
-        if (await db.execute(select(User.id).where(User.email == email))).first():
-            continue
-        u = User(email=email, full_name=name, password_hash=hash_password(DEMO_PASSWORD))
-        u.roles = [UserRole(role=r) for r in roles]
-        db.add(u)
+    """Demo logins (never created in production; see Settings). Re-syncs their roles on every start."""
+    for email, name, roles in DEMO_PEOPLE:
+        u = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
+        if u is None:
+            u = User(email=email, full_name=name, password_hash=hash_password(DEMO_PASSWORD))
+            db.add(u)
+        if sorted(r.role for r in u.roles or []) != sorted(roles):
+            u.roles = [UserRole(role=r) for r in roles]
 
 
 async def _policies(db: AsyncSession, factory: Factory) -> None:
@@ -225,13 +229,14 @@ async def _needles(db: AsyncSession, machines: list[tuple[Machine, Station, Work
 
 
 async def seed_demo(db: AsyncSession, seed: int = 7) -> bool:
+    await _demo_users(db)
     if (await db.execute(select(Factory.id).limit(1))).first():
+        await db.commit()
         return False
     rng = random.Random(seed)
     factory = Factory(code="U2", name="Unit 2", timezone="Asia/Dhaka", settings={"card_tap_enabled": True, "face_blur": True})
     db.add(factory)
     await db.flush()
-    await _demo_users(db)
     await _policies(db, factory)
     for code, bn in (("Overlock", "ওভারলক"), ("Lockstitch", "লকস্টিচ"), ("Flatlock", "ফ্ল্যাটলক")):
         db.add(MachineType(code=code, name=code, name_bn=bn))

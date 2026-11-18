@@ -43,7 +43,7 @@ export default function CamerasPage() {
       <PageHeader
         title="Cameras"
         sub="Cameras connect through an edge box on the floor. Raw video never leaves the factory."
-        actions={canEdit && <Link href="/app/cameras/new" className="btn btn-brand">Add camera</Link>}
+actions={canEdit && <Link href="/app/cameras/new" className="btn btn-brand">Add camera</Link>}
       />
       {error && <div className="mb-4"><ErrorBox message={error} /></div>}
       <section aria-labelledby="cams-h" className="panel overflow-hidden">

@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.audit import audit
 from app.core.db import get_session, utcnow
 from app.core.errors import AppError, not_found, ok
-from app.core.security import client_ip, current_user, require_roles
+from app.core.security import client_ip, require_roles
 from app.models import NeedleBatch, NeedleEvent, NeedleIssue, NeedleSupplier, User
 
 router = APIRouter(tags=["needles"])
@@ -29,7 +29,10 @@ def _pattern(issued: int, hours: float, rate: float, machines: int, workers: int
 
 
 @router.get("/needles/stats")
-async def needle_stats(db: AsyncSession = Depends(get_session), _: User = Depends(current_user)):
+async def needle_stats(
+    db: AsyncSession = Depends(get_session),
+    _: User = Depends(require_roles("factory_admin", "quality", "maintenance", "management")),
+):
     now = utcnow()
     batches = (await db.execute(select(NeedleBatch, NeedleSupplier).join(NeedleSupplier))).all()
     issues = list((await db.execute(select(NeedleIssue))).scalars())

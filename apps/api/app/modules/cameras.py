@@ -14,11 +14,12 @@ import logging
 import os
 import re
 import secrets
+import time
 from datetime import timedelta
 from typing import Annotated, Any, Literal
 
 from cryptography.fernet import Fernet
-from fastapi import APIRouter, BackgroundTasks, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,6 +46,7 @@ _NO_CTRL = r"^[^\x00-\x1f\x7f]*$"
 
 admin_only = require_roles("factory_admin")
 admin_or_maint = require_roles("factory_admin", "maintenance")
+live_viewers = require_roles("factory_admin", "supervisor", "management")
 
 
 # ---------- secrets ----------
@@ -188,6 +190,27 @@ class ZoneIn(BaseModel):
 
 class ZonesIn(BaseModel):
     zones: list[ZoneIn] = Field(max_length=24)
+
+
+# ---------- test cameras (a laptop or phone browser camera, for lab testing only) ----------
+FRAME_MAX_BYTES = 300 * 1024
+FRAME_FRESH_S = 10.0
+SEEN_WRITE_EVERY_S = 30.0
+_frames: dict[int, tuple[bytes, float]] = {}  # ponytail: in-process, newest frame only; use a shared store if the API ever runs multi-process
+_seen_written: dict[int, float] = {}
+
+
+def _frame_fresh(camera_id: int) -> bool:
+    frame = _frames.get(camera_id)
+    return frame is not None and time.monotonic() - frame[1] < FRAME_FRESH_S
+
+
+class TestSourceIn(BaseModel):
+    name: str = Field(min_length=1, max_length=80, pattern=_NO_CTRL)
+
+
+class FrameIn(BaseModel):
+    jpeg: str = Field(min_length=1, max_length=FRAME_MAX_BYTES * 2)  # base64
 
 
 # ---------- helpers ----------
@@ -334,6 +357,88 @@ async def get_job(box_id: int, job_id: int, db: AsyncSession = Depends(get_sessi
     if job is None or job.edge_device_id != box_id:
         raise not_found("Job")
     return ok(job_out(job))
+
+
+@router.get("/cameras/live")
+async def live_cameras(
+    request: Request, db: AsyncSession = Depends(get_session), user: User = Depends(live_viewers)
+):
+    """Cameras with a player URL for the live wall. Video is served by the edge box (go2rtc) on the factory LAN,
+    never by this server; a camera with no edge live_base shows a labelled simulated feed in demo mode."""
+    cams = list(
+        (await db.execute(select(Device).where(Device.kind == "camera", Device.is_active).order_by(Device.id))).scalars()
+    )
+    codes = await _codes(db, cams)
+    boxes = {b.id: b for b in (await db.execute(select(Device).where(Device.kind == "edge_box"))).scalars()}
+    demo = get_settings().simulator_enabled
+    out = []
+    for c in cams:
+        base = (boxes.get(c.config.get("edge_box_id")).config.get("live_base") if c.config.get("edge_box_id") in boxes else None)
+        if c.config.get("test_source"):
+            live = {"mode": "frames", "url": f"/api/v1/cameras/{c.id}/frame.jpg"}
+        elif base and c.config.get("connection"):
+            live = {"mode": "embed", "url": f"{base.rstrip('/')}/stream.html?src={c.code}&mode=webrtc,mse"}
+        elif demo:
+            live = {"mode": "demo", "url": None}
+        else:
+            live = {"mode": "none", "url": None}
+        out.append(
+            {
+                "id": c.id,
+                "code": c.code,
+                "name": c.config.get("name", c.code),
+                "stations": [{"id": i, "code": codes.get(i, "?")} for i in _station_ids(c)],
+                "online": _frame_fresh(c.id) if c.config.get("test_source") else is_online(c),
+                "last_seen_at": c.last_seen_at.isoformat() if c.last_seen_at else None,
+                "live": live,
+            }
+        )
+    audit(db, user.id, "camera.live_view", "device", None, {"cameras": len(out)}, client_ip(request))
+    await db.commit()
+    return ok(out)
+
+
+@router.post("/cameras/test-source", status_code=201)
+async def create_test_source(
+    body: TestSourceIn, request: Request, db: AsyncSession = Depends(get_session), user: User = Depends(admin_only)
+):
+    """A camera fed by a browser (laptop webcam or phone) for lab testing. Frames pass through this server's memory
+    only and are never stored, but they are not face-blurred, so this is refused in production."""
+    if get_settings().env == "production":
+        raise AppError(403, "TEST_CAMERA_DISABLED", "Browser test cameras are not available in production.")
+    cam = Device(code=f"TEST-{secrets.token_hex(3).upper()}", kind="camera", config={"name": body.name, "test_source": True})
+    db.add(cam)
+    await db.flush()
+    audit(db, user.id, "camera.create_test_source", "device", cam.id, {"name": body.name}, client_ip(request))
+    await db.commit()
+    return ok({"id": cam.id, "code": cam.code, "name": body.name})
+
+
+@router.put("/cameras/{camera_id}/frame")
+async def put_frame(camera_id: int, body: FrameIn, db: AsyncSession = Depends(get_session), _: User = Depends(admin_only)):
+    cam = await _camera(db, camera_id)
+    if not cam.config.get("test_source") or not cam.is_active:
+        raise AppError(400, "NOT_TEST_SOURCE", "This camera does not take browser frames.")
+    try:
+        jpeg = base64.b64decode(body.jpeg, validate=True)
+    except ValueError:
+        raise AppError(400, "BAD_FRAME", "The frame is not valid base64.") from None
+    if len(jpeg) > FRAME_MAX_BYTES or not jpeg.startswith(b"\xff\xd8"):
+        raise AppError(400, "BAD_FRAME", "The frame must be a JPEG under 300 KB.")
+    now = time.monotonic()
+    _frames[camera_id] = (jpeg, now)
+    if now - _seen_written.get(camera_id, -SEEN_WRITE_EVERY_S) >= SEEN_WRITE_EVERY_S:
+        _seen_written[camera_id] = now
+        cam.last_seen_at = utcnow()
+        await db.commit()
+    return ok({"bytes": len(jpeg)})
+
+
+@router.get("/cameras/{camera_id}/frame.jpg")
+async def get_frame(camera_id: int, _: User = Depends(live_viewers)):
+    if not _frame_fresh(camera_id):
+        raise not_found("Frame")
+    return Response(_frames[camera_id][0], media_type="image/jpeg", headers={"Cache-Control": "no-store"})
 
 
 @router.get("/cameras/station-options")

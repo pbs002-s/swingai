@@ -10,12 +10,22 @@ services:
       - ./mosquitto/passwd:/mosquitto/config/passwd:ro
       - mqtt-data:/mosquitto/data
 
+  # Live view for browsers on the factory LAN only. Never forward these ports to the internet.
+  go2rtc:
+    image: alexxit/go2rtc:1.9.9
+    restart: unless-stopped
+    ports:
+      - "1984:1984"  # player + API (the collector registers cameras here)
+      - "8555:8555"  # WebRTC media (tcp + udp)
+      - "8555:8555/udp"
+
   collector:
     build: .
     restart: unless-stopped
-    depends_on: [mosquitto]
+    depends_on: [mosquitto, go2rtc]
     env_file: .env
     environment:
+      GO2RTC_URL: http://go2rtc:1984
       MQTT_HOST: mosquitto
       OUTBOX_PATH: /data/outbox.sqlite3
     volumes: [edge-data:/data]
