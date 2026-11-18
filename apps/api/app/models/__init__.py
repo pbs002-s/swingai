@@ -2,6 +2,8 @@
 
 from app.models.alerts import Alert, AlertRule
 from app.models.auth import AuditLog, Lead, Session, User, UserRole
+from app.models.catalog import MachineBrand, MachineType
+from app.models.edge import EdgeJob
 from app.models.events import Event, EventReview, StationLive
 from app.models.org import (
     Device,
@@ -26,6 +28,7 @@ __all__ = [
     "AlertRule",
     "AuditLog",
     "Device",
+    "EdgeJob",
     "Event",
     "EventReview",
     "Factory",
@@ -33,6 +36,8 @@ __all__ = [
     "Lead",
     "Line",
     "Machine",
+    "MachineBrand",
+    "MachineType",
     "MachineAssignment",
     "NeedleBatch",
     "NeedleEvent",

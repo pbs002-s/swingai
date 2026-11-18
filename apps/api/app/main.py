@@ -14,7 +14,23 @@ from app.core.db import SessionLocal, engine
 from app.core.errors import install_error_handlers, ok
 from app.core.security import require_roles
 from app.models import User
-from app.modules import alerts, auth, events, floor, ingest, leads, needles, org, stream
+from app.modules import (
+    alerts,
+    auth,
+    cameras,
+    edge_sim,
+    events,
+    floor,
+    imports,
+    ingest,
+    leads,
+    needles,
+    org,
+    performance,
+    setup,
+    setup_users,
+    stream,
+)
 from app.simulator.engine import Simulator
 from app.simulator.seed import ensure_admin, seed_demo
 
@@ -26,6 +42,7 @@ async def _rules_loop(interval: float) -> None:
         try:
             async with SessionLocal() as db:
                 await alerts.evaluate_rules(db)
+                await edge_sim.run_simulated_edge_jobs(db)
         except Exception:
             log.exception("alert rule evaluation failed")
         await asyncio.sleep(interval)
@@ -121,6 +138,11 @@ def create_app() -> FastAPI:
         alerts.router,
         needles.router,
         leads.router,
+        performance.router,
+        cameras.router,
+        setup.router,
+        setup_users.router,
+        imports.router,
         stream.router,
         sim_router,
     ):
