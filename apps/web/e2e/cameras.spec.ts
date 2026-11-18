@@ -111,5 +111,5 @@ test("add a camera with the wizard against the simulated edge box", async ({ pag
 test("a supervisor cannot add cameras", async ({ page }) => {
   await login(page, "supervisor");
   await page.goto("/app/cameras/new");
-  await expect(page.getByText("Only a factory admin can add cameras")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your role cannot open this page" })).toBeVisible();
 });

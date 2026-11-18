@@ -18,6 +18,7 @@ class Settings:
     config_cache_path: Path
     device_code: str | None
     log_level: str
+    go2rtc_url: str = ""
 
     @classmethod
     def from_env(cls, env: dict[str, str] | None = None) -> "Settings":
@@ -40,4 +41,5 @@ class Settings:
             config_cache_path=Path(env.get("SS_CONFIG_CACHE", str(outbox.with_name("edge_config.json")))),
             device_code=env.get("SS_DEVICE_CODE") or None,
             log_level=env.get("LOG_LEVEL", "INFO").upper(),
+            go2rtc_url=env.get("GO2RTC_URL", ""),
         )

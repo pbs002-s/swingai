@@ -85,8 +85,9 @@ test("settings: admin edits an alert rule; supervisor cannot", async ({ page }) 
   await page.getByRole("button", { name: "Log out" }).click();
   await page.waitForURL("**/login");
   await login(page, "supervisor");
-  await nav(page, "Settings");
-  await expect(page.getByText("Only a factory admin can change these.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Settings" })).toHaveCount(0); // not in a supervisor's menu
+  await page.goto("/app/settings");
+  await expect(page.getByRole("heading", { name: "Your role cannot open this page" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Factory simulator" })).toHaveCount(0);
 });
 
@@ -95,7 +96,7 @@ test("language and theme switch", async ({ page }) => {
   await page.getByRole("button", { name: "বাংলা" }).click();
   await expect(page.getByRole("link", { name: "লাইভ ফ্লোর" })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "bn");
-  await page.getByRole("button", { name: "EN" }).click();
+  await page.getByRole("button", { name: "EN", exact: true }).click();
   await page.getByRole("button", { name: /Switch to (dark|light) theme/ }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", /dark|light/);
 });

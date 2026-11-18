@@ -7,7 +7,7 @@ const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=()" },
   // Next.js needs inline scripts for hydration; everything else is locked to this origin.
   ...(process.env.NODE_ENV === "production"
     ? [{
@@ -15,7 +15,7 @@ const securityHeaders = [
         value: [
           "default-src 'self'", "script-src 'self' 'unsafe-inline'", "style-src 'self' 'unsafe-inline'",
           "img-src 'self' data: blob:", "font-src 'self'", "connect-src 'self'", "frame-ancestors 'self'",
-          "object-src 'none'", "base-uri 'self'", "form-action 'self'",
+          "frame-src 'self' http: https:", "object-src 'none'", "base-uri 'self'", "form-action 'self'",
         ].join("; "),
       }]
     : []),

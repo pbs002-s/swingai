@@ -6,6 +6,8 @@ export const USERS = {
   admin: "admin@stitchsense.local",
   supervisor: "supervisor@stitchsense.local",
   quality: "quality@stitchsense.local",
+  maintenance: "maintenance@stitchsense.local",
+  manager: "manager@stitchsense.local",
 } as const;
 
 export async function login(page: Page, who: keyof typeof USERS = "admin") {

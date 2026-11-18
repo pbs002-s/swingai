@@ -81,10 +81,9 @@ test("import: preview of a bad CSV lists row errors and saves nothing", async ({
   await expect(page.getByRole("button", { name: "Import valid rows" })).toBeDisabled();
 });
 
-test("a supervisor sees setup read only", async ({ page }) => {
+test("a supervisor cannot open setup", async ({ page }) => {
   await login(page, "supervisor");
   await page.goto("/app/setup");
-  await expect(page.getByText("Read only. Only a factory admin can change setup.")).toBeVisible();
-  await expect(page.getByRole("tab", { name: "Import" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Your role cannot open this page" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Add line" })).toHaveCount(0);
 });

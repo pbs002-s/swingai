@@ -102,3 +102,7 @@ on the host: the server rejects events far in the future and flags clock skew.
   with the error code (`UNKNOWN_STATION`, `DEVICE_STATION_MISMATCH`, …) and never resent.
 - Network errors, 5xx, 401/403/404 and 429 (honours `Retry-After`) back off from 1 s to 5 min with jitter.
 - Rows older than 72 h are dropped with a logged count.
+
+## Live view (factory LAN only)
+
+`go2rtc` re-serves each camera so browsers on the factory network can watch it. The collector registers every camera from the pulled config (`GO2RTC_URL`). To enable the Live cameras page for a box, set `live_base` in that edge box device's config on the central server to the box's LAN address, e.g. `http://192.168.20.5:1984`. Do not forward ports 1984 or 8555 to the internet. Camera passwords never reach the browser.

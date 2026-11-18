@@ -129,7 +129,7 @@ async def perf_data():
         db.add(User(email="perf-sup@stitchsense.local", full_name="Other line sup", password_hash=hash_password(DEMO_PASSWORD)))
         await db.flush()
         sup = (await db.execute(select(User).where(User.email == "perf-sup@stitchsense.local"))).scalar_one()
-        db.add(UserRole(user_id=sup.id, role="supervisor", scope_type="line", scope_id=other.id))
+        db.add(UserRole(user_id=sup.id, role="management", scope_type="line", scope_id=other.id))
         await db.commit()
         return {"op": op.id, "ids": ids, "phone_event": phone_event.id, "line": line.id}
 
@@ -194,7 +194,8 @@ async def test_policy_versions_and_rejects_bad_weights(admin):
 
 async def test_roles_and_line_scope(supervisor, manager, perf_data):
     assert (await manager.get("/performance")).status_code == 200
-    assert len(_rows(await supervisor.get(f"/performance?group={perf_data['op']}"))) == 4
+    assert len(_rows(await manager.get(f"/performance?group={perf_data['op']}"))) == 4
+    assert (await supervisor.get("/performance")).status_code == 403  # rankings are for management, not supervisors
     assert (await supervisor.post("/performance/policy", json={"weights": DEFAULT})).status_code == 403
     assert (await manager.post("/performance/policy", json={"weights": DEFAULT})).status_code == 403
     quality = await login_as("quality@stitchsense.local")

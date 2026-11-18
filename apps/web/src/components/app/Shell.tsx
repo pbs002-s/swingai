@@ -12,22 +12,46 @@ import type { Me } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import type { MessageKey } from "@/lib/i18n";
 
-const NAV: { href: string; key: MessageKey; icon: IconName }[] = [
+const DEMO = process.env.NEXT_PUBLIC_DEMO === "1";
+
+// Who sees each page (system_admin sees all). The API enforces the same split; this only keeps the menu honest.
+// `roles` omitted = every logged-in role.
+type NavItem = { href: string; key: MessageKey; icon: IconName; roles?: string[] };
+const NAV: NavItem[] = [
   { href: "/app", key: "overview", icon: "grid" },
-  { href: "/app/floor", key: "liveFloor", icon: "floor" },
-  { href: "/app/review", key: "reviewQueue", icon: "check" },
-  { href: "/app/alerts", key: "alerts", icon: "alert" },
-  { href: "/app/cameras", key: "cameras", icon: "camera" },
-  { href: "/app/needles", key: "needles", icon: "needle" },
-  { href: "/app/performance", key: "performance", icon: "bars" },
-  { href: "/app/setup", key: "setup", icon: "server" },
-  { href: "/app/settings", key: "settings", icon: "settings" },
+  { href: "/app/floor", key: "liveFloor", icon: "floor", roles: ["factory_admin", "supervisor", "maintenance"] },
+  { href: "/app/review", key: "reviewQueue", icon: "check", roles: ["factory_admin", "supervisor", "quality", "maintenance"] },
+  { href: "/app/alerts", key: "alerts", icon: "alert", roles: ["factory_admin", "supervisor", "quality", "maintenance"] },
+  { href: "/app/cameras/live", key: "liveCameras", icon: "play", roles: ["factory_admin", "supervisor", "management"] },
+  { href: "/app/cameras", key: "cameras", icon: "camera", roles: ["factory_admin"] },
+  { href: "/app/needles", key: "needles", icon: "needle", roles: ["factory_admin", "quality", "maintenance", "management"] },
+  { href: "/app/performance", key: "performance", icon: "bars", roles: ["factory_admin", "management"] },
+  { href: "/app/setup", key: "setup", icon: "server", roles: ["factory_admin"] },
+  { href: "/app/settings", key: "settings", icon: "settings", roles: ["factory_admin"] },
+  ...(DEMO ? [{ href: "/app/lab", key: "lab" as MessageKey, icon: "play" as IconName, roles: ["factory_admin"] }] : []),
 ];
+
+const ROLE_LABEL: Record<string, string> = {
+  system_admin: "System admin",
+  factory_admin: "Factory admin",
+  supervisor: "Supervisor",
+  quality: "Quality",
+  maintenance: "Maintenance",
+  management: "Management",
+};
 
 const MeContext = createContext<Me | null>(null);
 export const useMe = () => useContext(MeContext);
 export const hasRole = (me: Me | null, ...roles: string[]) =>
   !!me?.roles.some((r) => r.role === "system_admin" || roles.includes(r.role));
+
+const canSee = (me: Me | null, n: NavItem) => !n.roles || hasRole(me, ...n.roles);
+const isActive = (n: NavItem, path: string) => (n.href === "/app" ? path === "/app" : path === n.href || path.startsWith(`${n.href}/`));
+
+/** The menu item that owns this path: the longest matching href, so /app/cameras/live is not ruled by /app/cameras. */
+function pageFor(path: string): NavItem | undefined {
+  return NAV.filter((n) => isActive(n, path)).sort((a, b) => b.href.length - a.href.length)[0];
+}
 
 export function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -58,8 +82,8 @@ export function Shell({ children }: { children: ReactNode }) {
             </Link>
           </div>
           <nav aria-label="App" className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
-            {NAV.map((n) => {
-              const active = n.href === "/app" ? pathname === "/app" : pathname.startsWith(n.href);
+            {NAV.filter((n) => canSee(me, n)).map((n) => {
+              const active = pageFor(pathname) === n;
               return (
                 <Link
                   key={n.href}
@@ -99,6 +123,7 @@ export function Shell({ children }: { children: ReactNode }) {
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate text-[13px] font-medium">{me.full_name}</span>
                 <span className="truncate text-[12px] text-ink-3">{me.email}</span>
+                <span className="truncate text-[12px] text-ink-3">{[...new Set(me.roles.map((r) => ROLE_LABEL[r.role] ?? r.role))].join(", ")}</span>
               </span>
               <button type="button" onClick={logout} className="btn btn-ghost btn-sm w-9 px-0" aria-label={t("logOut")}>
                 <Icon name="logout" size={16} />
@@ -106,7 +131,15 @@ export function Shell({ children }: { children: ReactNode }) {
             </div>
           </div>
         </aside>
-        <main className="min-w-0 flex-1 px-4 py-5 sm:px-7 lg:py-6">{children}</main>
+        <main className="min-w-0 flex-1 px-4 py-5 sm:px-7 lg:py-6">
+          {canSee(me, pageFor(pathname) ?? NAV[0]) ? children : (
+            <div role="alert" className="panel max-w-xl p-6">
+              <h1 className="text-[20px] font-semibold">{t("noAccess")}</h1>
+              <p className="mt-1 text-[14px] text-ink-3">{t("noAccessText")}</p>
+              <Link href="/app" className="btn mt-4">{t("overview")}</Link>
+            </div>
+          )}
+        </main>
       </div>
     </MeContext.Provider>
   );

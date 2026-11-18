@@ -45,8 +45,8 @@ test("performance: weights must be whole numbers totalling 100", async ({ page }
   await expect(page.getByRole("button", { name: "Edit weights" })).toBeVisible();
 });
 
-test("performance: supervisors see the ranking but cannot edit weights", async ({ page }) => {
-  await login(page, "supervisor");
+test("performance: management sees the ranking but cannot edit weights", async ({ page }) => {
+  await login(page, "manager");
   await nav(page, "Performance");
   await expect(page.getByRole("heading", { name: "Ranking" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Edit weights" })).toHaveCount(0);

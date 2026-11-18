@@ -180,3 +180,40 @@ async def test_rbac(supervisor, anon, db):
     await db.commit()
     r = await anon.get("/edge/jobs", headers={"authorization": f"Bearer {token}"})
     assert r.status_code == 403 and r.json()["error"]["code"] == "DEVICE_NOT_EDGE"
+
+
+async def test_live_wall_urls_and_access(admin, supervisor, anon, db):
+    edge = await _edge_id(db)
+    box = await db.get(Device, edge)
+    box.config = {**(box.config or {}), "live_base": "http://10.20.0.5:1984/"}
+    await db.commit()
+    cam = await _create_camera(admin, db, edge)
+
+    r = await supervisor.get("/cameras/live")  # supervisors can watch, not edit
+    assert r.status_code == 200, r.text
+    row = next(c for c in r.json()["data"] if c["id"] == cam["id"])
+    assert row["live"] == {"mode": "embed", "url": f"http://10.20.0.5:1984/stream.html?src={cam['code']}&mode=webrtc,mse"}
+    assert "s3cret-cam" not in r.text and "connection" not in row  # the camera password never reaches the browser
+    assert (await anon.get("/cameras/live")).status_code == 401
+
+
+async def test_browser_test_camera_frames(admin, supervisor, anon, monkeypatch):
+    jpeg = base64.b64encode(b"\xff\xd8\xff\xe0fake-jpeg").decode()
+    cam = (await admin.post("/cameras/test-source", json={"name": "Lab laptop"})).json()["data"]
+
+    assert (await supervisor.get(f"/cameras/{cam['id']}/frame.jpg")).status_code == 404  # nothing sent yet
+    assert (await admin.put(f"/cameras/{cam['id']}/frame", json={"jpeg": base64.b64encode(b"nope").decode()})).status_code == 400
+    assert (await admin.put(f"/cameras/{cam['id']}/frame", json={"jpeg": jpeg})).status_code == 200
+    assert (await supervisor.put(f"/cameras/{cam['id']}/frame", json={"jpeg": jpeg})).status_code == 403  # only admins publish
+
+    r = await supervisor.get(f"/cameras/{cam['id']}/frame.jpg")
+    assert r.status_code == 200 and r.headers["content-type"] == "image/jpeg" and r.content.startswith(b"\xff\xd8")
+    assert (await anon.get(f"/cameras/{cam['id']}/frame.jpg")).status_code == 401
+    row = next(c for c in (await supervisor.get("/cameras/live")).json()["data"] if c["id"] == cam["id"])
+    assert row["online"] and row["live"]["mode"] == "frames"
+
+    monkeypatch.setattr(cameras, "FRAME_FRESH_S", -1.0)  # frames go stale when the browser stops sending
+    assert (await supervisor.get(f"/cameras/{cam['id']}/frame.jpg")).status_code == 404
+
+    monkeypatch.setattr(cameras.get_settings(), "env", "production")
+    assert (await admin.post("/cameras/test-source", json={"name": "x"})).json()["error"]["code"] == "TEST_CAMERA_DISABLED"
