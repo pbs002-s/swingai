@@ -20,7 +20,7 @@ from app.models import Session
 
 router = APIRouter(tags=["stream"])
 HEARTBEAT_S = 15
-MAX_STREAMS_PER_USER = 4
+MAX_STREAMS_PER_USER = 20  # closed tabs free their slot at the next heartbeat
 _open: dict[int, int] = defaultdict(int)
 
 
