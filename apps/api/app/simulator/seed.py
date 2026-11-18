@@ -22,6 +22,8 @@ from app.models import (
     Line,
     Machine,
     MachineAssignment,
+    MachineBrand,
+    MachineType,
     NeedleBatch,
     NeedleEvent,
     NeedleIssue,
@@ -231,13 +233,16 @@ async def seed_demo(db: AsyncSession, seed: int = 7) -> bool:
     await db.flush()
     await _demo_users(db)
     await _policies(db, factory)
+    for code, bn in (("Overlock", "ওভারলক"), ("Lockstitch", "লকস্টিচ"), ("Flatlock", "ফ্ল্যাটলক")):
+        db.add(MachineType(code=code, name=code, name_bn=bn))
+    db.add_all(MachineBrand(name=b) for b in BRANDS)
     floors = [Floor(factory_id=factory.id, code=f"F{n}", name=f"Floor {n}") for n in (1, 2)]
     db.add_all(floors)
     await db.flush()
     edge = Device(
         code="EDGE-1",
         kind="edge_box",
-        config={"name": "Floor 1 edge box"},
+        config={"name": "Floor 1 edge box", "simulated": True},
         token_hash=sha256(secrets.token_urlsafe(32)),
         last_seen_at=utcnow(),
     )
