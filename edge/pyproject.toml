@@ -1,0 +1,44 @@
+[project]
+name = "stitchsense-edge"
+version = "0.1.0"
+description = "StitchSense edge box: collector (MQTT + vision -> outbox -> central API) and camera pipeline"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "paho-mqtt>=2.1",
+    "numpy>=2.1",
+    "tzdata>=2026.6",
+]
+
+[project.optional-dependencies]
+vision = [
+    "onnxruntime>=1.20",
+    "opencv-python-headless>=4.10,<5",  # 5.x moved the HOG people detector out
+    "mediapipe>=0.10.18",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[tool.uv]
+package = false
+# mediapipe depends on the GUI build opencv-contrib-python, which overwrites the headless cv2 module.
+# Drop it; mediapipe's Tasks API runs on the headless build.
+override-dependencies = ["opencv-contrib-python; sys_platform == 'never'"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106", "S108", "S311"]
