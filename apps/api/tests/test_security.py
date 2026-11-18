@@ -30,8 +30,14 @@ async def test_line_scoped_supervisor_cannot_act_on_another_line(device, db):
     mine = (await db.execute(select(Station).where(Station.line_id == lines[0].id).limit(1))).scalar_one()
     ids = []
     for st in (other, mine):
-        ev = {"event_uuid": str(uuid.uuid4()), "event_type": "worker_state", "state": "phone_use",
-              "station_code": st.code, "start_time": utcnow().isoformat(), "confidence": 0.9}
+        ev = {
+            "event_uuid": str(uuid.uuid4()),
+            "event_type": "worker_state",
+            "state": "phone_use",
+            "station_code": st.code,
+            "start_time": utcnow().isoformat(),
+            "confidence": 0.9,
+        }
         ids.append((await device.post("/ingest/events", json={"events": [ev]})).json()["data"]["results"][0]["event_id"])
     c = await login_as("line1@stitchsense.local")
     assert (await c.post(f"/events/{ids[0]}/review", json={"decision": "confirm"})).status_code == 403
@@ -46,8 +52,13 @@ async def test_management_cannot_silence_alerts(manager, admin):
 
 
 async def test_device_clock_far_ahead_is_refused_and_does_not_freeze_live_state(device, db):
-    ahead = {"event_uuid": str(uuid.uuid4()), "event_type": "worker_state", "state": "idle", "station_code": "L6-S01",
-             "start_time": (utcnow() + timedelta(hours=3)).isoformat()}
+    ahead = {
+        "event_uuid": str(uuid.uuid4()),
+        "event_type": "worker_state",
+        "state": "idle",
+        "station_code": "L6-S01",
+        "start_time": (utcnow() + timedelta(hours=3)).isoformat(),
+    }
     res = (await device.post("/ingest/events", json={"events": [ahead]})).json()["data"]["results"][0]
     assert res["error"] == "TIME_IN_FUTURE"
 
@@ -56,8 +67,14 @@ async def test_repeated_state_keeps_its_start_time(device, db):
     st = (await db.execute(select(Station).where(Station.code == "L6-S02"))).scalar_one()
     t0 = utcnow() - timedelta(minutes=10)
     for t in (t0, t0 + timedelta(minutes=5)):
-        ev = {"event_uuid": str(uuid.uuid4()), "event_type": "worker_state", "state": "away", "station_code": st.code,
-              "start_time": t.isoformat(), "confidence": 0.95}
+        ev = {
+            "event_uuid": str(uuid.uuid4()),
+            "event_type": "worker_state",
+            "state": "away",
+            "station_code": st.code,
+            "start_time": t.isoformat(),
+            "confidence": 0.95,
+        }
         await device.post("/ingest/events", json={"events": [ev]})
     from app.models import StationLive
 
@@ -67,17 +84,38 @@ async def test_repeated_state_keeps_its_start_time(device, db):
 
 
 async def test_oversized_metadata_is_refused(device):
-    ev = {"event_uuid": str(uuid.uuid4()), "event_type": "worker_state", "state": "working", "station_code": "L6-S03",
-          "start_time": utcnow().isoformat(), "metadata": {"blob": "x" * 5000}}
+    ev = {
+        "event_uuid": str(uuid.uuid4()),
+        "event_type": "worker_state",
+        "state": "working",
+        "station_code": "L6-S03",
+        "start_time": utcnow().isoformat(),
+        "metadata": {"blob": "x" * 5000},
+    }
     res = (await device.post("/ingest/events", json={"events": [ev]})).json()["data"]["results"][0]
     assert res["error"] == "METADATA_TOO_LARGE"
 
 
 async def test_production_entry_refuses_unknown_station(admin):
     now = utcnow()
-    body = {"station_id": 999999, "operation_id": 1, "period_start": (now - timedelta(hours=1)).isoformat(),
-            "period_end": now.isoformat(), "qty_accepted": 10}
+    body = {
+        "station_id": 999999,
+        "operation_id": 1,
+        "period_start": (now - timedelta(hours=1)).isoformat(),
+        "period_end": now.isoformat(),
+        "qty_accepted": 10,
+    }
     assert (await admin.post("/production-entries", json=body)).status_code == 404
 
 
 __all__ = ["Event"]
+
+
+async def test_device_token_rotation_is_admin_only_and_shown_once(admin, supervisor, db):
+    from app.models import Device
+
+    dev = (await db.execute(select(Device).where(Device.kind == "machine_sensor").limit(1))).scalar_one()
+    assert (await supervisor.post(f"/devices/{dev.id}/rotate-token")).status_code == 403
+    r = await admin.post(f"/devices/{dev.id}/rotate-token")
+    token = r.json()["data"]["token"]
+    assert len(token) > 30 and token not in (await admin.get("/devices")).text
