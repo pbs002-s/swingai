@@ -1,0 +1,20 @@
+{
+  "device_code": "CAM-L1-S01",
+  "timezone": "Asia/Dhaka",
+  "fps": 5,
+  "face_blur": true,
+  "breaks": [{"start": "13:00", "end": "14:00"}],
+  "privacy_masks": [[[0.0, 0.0], [0.15, 0.0], [0.15, 1.0], [0.0, 1.0]]],
+  "stations": [
+    {
+      "station_code": "L1-S01",
+      "work_zone": [[0.15, 0.1], [0.6, 0.1], [0.6, 1.0], [0.15, 1.0]],
+      "hands_zone": [[0.25, 0.55], [0.55, 0.55], [0.55, 0.9], [0.25, 0.9]]
+    },
+    {
+      "station_code": "L1-S02",
+      "work_zone": [[0.6, 0.1], [1.0, 0.1], [1.0, 1.0], [0.6, 1.0]]
+    }
+  ],
+  "rules": {"away_after_s": 60, "phone_min_s": 20, "phone_min_confidence": 0.75, "idle_after_s": 300, "hold_s": 3}
+}
