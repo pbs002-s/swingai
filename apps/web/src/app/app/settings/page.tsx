@@ -15,7 +15,29 @@ function RuleRow({ rule, canEdit, onSaved }: { rule: AlertRule; canEdit: boolean
   const [draft, setDraft] = useState(rule);
   const [state, setState] = useState<"idle" | "saving" | "saved">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [trial, setTrial] = useState<string | null>(null);
   const dirty = JSON.stringify(draft) !== JSON.stringify(rule);
+
+  async function testRule() {
+    setTrial("Testing…");
+    setError(null);
+    const condition = Object.fromEntries(Object.entries(draft.condition).filter(([k]) => NUMERIC_KEYS.includes(k)));
+    try {
+      const { data } = await post<{ would_raise: number | null; days: number; top_stations: { station: string; count: number }[]; note: string | null }>(
+        `/alert-rules/${rule.id}/test`,
+        { condition },
+      );
+      const top = data.top_stations.map((s) => `${s.station} ×${s.count}`).join(", ");
+      setTrial(
+        data.would_raise === null
+          ? (data.note ?? "This rule cannot be replayed.")
+          : `Would have raised ${data.would_raise} alert${data.would_raise === 1 ? "" : "s"} in the last ${data.days} days${top ? ` (most: ${top})` : ""}.`,
+      );
+    } catch (e) {
+      setTrial(null);
+      setError(e instanceof ApiFailure ? e.message : "Could not test.");
+    }
+  }
 
   async function save() {
     setState("saving");
@@ -71,10 +93,16 @@ function RuleRow({ rule, canEdit, onSaved }: { rule: AlertRule; canEdit: boolean
         On
       </label>
       {canEdit && (
+        <button type="button" className="btn btn-sm" onClick={testRule} aria-label={`Test ${rule.name} over the last 7 days`}>
+          Test 7 days
+        </button>
+      )}
+      {canEdit && (
         <button type="button" className="btn btn-brand btn-sm" disabled={!dirty || state === "saving"} onClick={save}>
           {state === "saving" ? "Saving…" : state === "saved" && !dirty ? "Saved" : "Save"}
         </button>
       )}
+      {trial && <span role="status" className="w-full text-[13px] text-ink-2">{trial}</span>}
       {error && <span role="alert" className="w-full text-[13px] text-down">{error}</span>}
     </li>
   );

@@ -25,3 +25,11 @@ test("policies: management can read but not change", async ({ page }) => {
   await expect(page.getByRole("region", { name: "Shift" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Save as new version" })).toHaveCount(0);
 });
+
+test("alert rules: the dry run reports a count without raising alerts", async ({ page }) => {
+  await login(page, "admin");
+  await page.getByRole("link", { name: "Settings" }).click();
+  const rule = page.getByRole("listitem").filter({ hasText: "Machine stopped" });
+  await rule.getByRole("button", { name: /Test .* over the last 7 days/ }).click();
+  await expect(rule.getByRole("status")).toContainText(/Would have raised \d+ alerts? in the last 7 days/);
+});

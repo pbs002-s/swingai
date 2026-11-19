@@ -109,3 +109,26 @@ async def test_health_and_security_headers(anon):
     r = await anon.get("/healthz")
     assert r.status_code == 200 and r.headers["x-frame-options"] == "DENY"
     assert (await anon.get("/readyz")).json()["data"]["database"] == "ok"
+
+
+async def test_rule_dry_run_counts_history_and_creates_nothing(admin, supervisor, db):
+    rules = (await admin.get("/alert-rules")).json()["data"]
+    stop = next(r for r in rules if r["name"] == "Machine stopped")
+    before = (await admin.get("/alerts")).json()
+    r = await admin.post(f"/alert-rules/{stop['id']}/test", json={})
+    assert r.status_code == 200, r.text
+    d = r.json()["data"]
+    assert d["days"] == 7 and isinstance(d["would_raise"], int) and d["would_raise"] >= 0
+
+    # a stricter threshold can never raise more than a looser one
+    strict = (await admin.post(f"/alert-rules/{stop['id']}/test", json={"condition": {"min_minutes": 600}})).json()["data"]
+    loose = (await admin.post(f"/alert-rules/{stop['id']}/test", json={"condition": {"min_minutes": 1}})).json()["data"]
+    assert strict["would_raise"] <= d["would_raise"] <= loose["would_raise"]
+    assert (await admin.get("/alerts")).json() == before  # a dry run creates no alerts
+
+    bad = await admin.post(f"/alert-rules/{stop['id']}/test", json={"condition": {"nonsense": 1}})
+    assert bad.status_code == 400
+    assert (await supervisor.post(f"/alert-rules/{stop['id']}/test", json={})).status_code == 403
+    assert (await admin.post("/alert-rules/999999/test", json={})).status_code == 404
+    device = next(r for r in rules if r["kind"] == "device_offline")
+    assert (await admin.post(f"/alert-rules/{device['id']}/test", json={})).json()["data"]["would_raise"] is None

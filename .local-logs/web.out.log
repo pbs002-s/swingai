@@ -94,3 +94,51 @@
  GET /favicon.ico 200 in 46ms
  GET /app/reports 200 in 116ms
  GET /favicon.ico 200 in 26ms
+ ✓ Compiled in 2.2s (955 modules)
+ ✓ Compiled in 288ms (429 modules)
+ ✓ Compiled in 260ms (429 modules)
+ GET /login 200 in 459ms
+ ✓ Compiled /favicon.ico in 292ms (543 modules)
+ GET /favicon.ico 200 in 542ms
+ GET /app 200 in 153ms
+ GET /favicon.ico 200 in 26ms
+ ○ Compiling /app/policies ...
+ ✓ Compiled /app/policies in 615ms (965 modules)
+ GET /app/policies 200 in 787ms
+ GET /favicon.ico 200 in 47ms
+ GET /login 200 in 235ms
+ GET /favicon.ico 200 in 29ms
+ GET /app 200 in 70ms
+ GET /favicon.ico 200 in 25ms
+ GET /app/policies 200 in 137ms
+ GET /favicon.ico 200 in 41ms
+ GET /login 200 in 113ms
+ GET /favicon.ico 200 in 47ms
+ GET /app 200 in 72ms
+ GET /favicon.ico 200 in 25ms
+ GET /login 200 in 107ms
+ GET /favicon.ico 200 in 31ms
+ GET /app 200 in 62ms
+ GET /favicon.ico 200 in 31ms
+ GET /login 200 in 130ms
+ GET /favicon.ico 200 in 31ms
+ GET /app 200 in 72ms
+ GET /favicon.ico 200 in 27ms
+ GET /login 200 in 95ms
+ GET /favicon.ico 200 in 29ms
+ GET /app 200 in 56ms
+ GET /favicon.ico 200 in 33ms
+ GET /login 200 in 106ms
+ GET /favicon.ico 200 in 30ms
+ GET /app 200 in 83ms
+ GET /favicon.ico 200 in 30ms
+ GET /login 200 in 126ms
+ GET /favicon.ico 200 in 33ms
+ GET /app 200 in 61ms
+ GET /favicon.ico 200 in 31ms
+ ✓ Compiled /app/performance in 492ms (557 modules)
+ GET /app/performance 200 in 773ms
+ GET /favicon.ico 200 in 32ms
+ ✓ Compiled /app/cameras/live in 409ms (565 modules)
+ GET /app/cameras/live 200 in 598ms
+ GET /favicon.ico 200 in 42ms

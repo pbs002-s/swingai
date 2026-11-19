@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -156,6 +156,93 @@ async def patch_rule(
     audit(db, user.id, "alert_rule.update", "alert_rule", r.id, {"before": before, "after": rule_out(r)}, client_ip(request))
     await db.commit()
     return ok(rule_out(r))
+
+
+DRY_RUN_DAYS = 7
+
+_DRY_STATE_DURATION = text("""
+select station_id, count(*) as n from (
+  select e.station_id, e.state, e.start_time,
+    coalesce(lead(e.start_time) over (partition by e.station_id order by e.start_time, e.id), :now) as end_time
+  from events e
+  where e.event_type = :event_type and e.start_time >= :lookback and e.start_time < :now and e.station_id is not null
+    and e.review_status <> 'rejected'
+) x
+where x.state = :state and x.start_time >= :since and extract(epoch from x.end_time - x.start_time) / 60 >= :minutes
+group by 1
+""")
+
+
+class RuleTestIn(BaseModel):
+    condition: dict[str, float | int | str] | None = None  # try an edit before saving it
+
+
+@router.post("/alert-rules/{rule_id}/test")
+async def test_rule(
+    rule_id: int,
+    body: RuleTestIn,
+    db: AsyncSession = Depends(get_session),
+    _: User = Depends(require_roles("factory_admin")),
+):
+    """Dry run: how many alerts this rule would have raised in the last 7 days. Creates nothing."""
+    r = await db.get(AlertRule, rule_id)
+    if r is None:
+        raise not_found("Alert rule")
+    cond = {**r.condition, **(body.condition or {})}
+    if body.condition and set(body.condition) - set(r.condition):
+        raise AppError(400, "VALIDATION_ERROR", "Unknown condition fields.")
+    now = utcnow()
+    since = now - timedelta(days=DRY_RUN_DAYS)
+    base = {"days": DRY_RUN_DAYS, "rule": r.name, "condition": cond}
+    try:
+        if r.kind == "state_duration":
+            params = {
+                "event_type": cond["event_type"],
+                "state": cond["state"],
+                "minutes": float(cond["min_minutes"]),
+                "now": now,
+                "since": since,
+                "lookback": since - timedelta(days=1),
+            }
+            rows = (await db.execute(_DRY_STATE_DURATION, params)).all()
+            codes = dict((await db.execute(select(Station.id, Station.code))).all())
+            counts = sorted(((codes.get(s, "?"), int(n)) for s, n in rows), key=lambda x: -x[1])
+            note = "Counts whole stops or idle periods. Break time is not subtracted, so the live rule may raise slightly fewer."
+            return ok(
+                {
+                    **base,
+                    "would_raise": sum(n for _, n in counts),
+                    "stations": len(counts),
+                    "top_stations": [{"station": c, "count": n} for c, n in counts[:5]],
+                    "note": note,
+                }
+            )
+        if r.kind == "event":
+            q = (
+                select(Event.station_id, func.count())
+                .where(
+                    Event.event_type == cond["event_type"],
+                    Event.state == cond["state"],
+                    Event.start_time >= since,
+                    Event.review_status != "rejected",
+                )
+                .group_by(Event.station_id)
+            )
+            rows = (await db.execute(q)).all()
+            return ok(
+                {**base, "would_raise": sum(int(n) for _, n in rows), "stations": len(rows), "top_stations": [], "note": None}
+            )
+    except (KeyError, ValueError, TypeError):
+        raise AppError(400, "VALIDATION_ERROR", "This rule's condition is incomplete or has a wrong value.") from None
+    return ok(
+        {
+            **base,
+            "would_raise": None,
+            "stations": 0,
+            "top_stations": [],
+            "note": "A device-offline rule cannot be replayed from history.",
+        }
+    )
 
 
 # ---------------------------------------------------------------- engine
