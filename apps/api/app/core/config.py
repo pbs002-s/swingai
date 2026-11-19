@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     max_login_attempts: int = 10
     login_rate_per_minute: int = 10
+    ingest_rate_per_minute: int = 120  # requests per device; an edge box sends batches, so this is generous
     lockout_minutes: int = 15
 
     admin_email: str = "admin@stitchsense.local"

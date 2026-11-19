@@ -54,7 +54,8 @@ Not done:
 
 - [ ] 2 Signed, short-lived live links
 - [ ] 9 Scheduled jobs "close shifts / recompute stale": by design nothing is cached, summaries are computed from events on demand, so there is nothing to recompute. T-3 is not needed in this architecture
-- [ ] 12 Load test at 500 stations
+- [~] 12 Load test: script and a first measurement are done ([LOAD_TEST.md](LOAD_TEST.md)). Dashboards and ingest meet the targets at 159 stations; **the performance ranking does not** (p95 1.6 s vs 0.8 s) and needs rollups (T-4). Not run at 500 stations or on a server
+- [ ] T-4 Hourly/daily rollups so the ranking stays fast at real data volume
 - [ ] 13 Monitoring beyond `healthcheck.sh` (no edge-box-offline notification outside the in-app alert, no disk alerts on the edge box)
 - [ ] Face blur on live video (needs a per-frame detector on the edge box)
 - [ ] C-4 optimistic locking
