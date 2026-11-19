@@ -84,7 +84,7 @@ export function Shell({ children }: { children: ReactNode }) {
               <span className="text-[16px] font-semibold tracking-[-0.02em]">StitchSense</span>
             </Link>
           </div>
-          <nav aria-label="App" className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+          <nav aria-label="App" className="flex gap-1 overflow-x-auto lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden">
             {NAV.filter((n) => canSee(me, n)).map((n) => {
               const active = pageFor(pathname) === n;
               return (
@@ -102,7 +102,7 @@ export function Shell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
-          <div className="mt-auto hidden flex-col gap-3 border-t border-line px-2 pt-3 lg:flex">
+          <div className="mt-auto hidden shrink-0 flex-col gap-3 border-t border-line px-2 pt-3 lg:flex">
             <div className="flex items-center gap-2">
               <div role="group" aria-label="Language" className="flex overflow-hidden rounded-lg border border-line-2 text-[13px]">
                 {(["en", "bn"] as const).map((l) => (

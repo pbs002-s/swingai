@@ -25,3 +25,10 @@ test("a page outside the role shows no-access instead of its content", async ({ 
   await page.goto("/app/cameras/live"); // the longer href wins over /app/cameras
   await expect(page.getByRole("heading", { level: 1, name: "Live cameras" })).toBeVisible();
 });
+
+test("on a short screen the admin's long menu scrolls and log out stays reachable", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 560 });
+  await login(page, "admin"); // the admin has the longest menu
+  await expect(page.getByRole("button", { name: "Log out" })).toBeInViewport();
+  await expect(page.getByRole("button", { name: "বাংলা" })).toBeInViewport();
+});
