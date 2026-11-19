@@ -70,7 +70,7 @@ class ThresholdsBody(BaseModel):
 
 class RetentionBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    events_days: int = Field(ge=30, le=3650)  # raw activity events
+    events_days: int = Field(ge=90, le=3650)  # raw activity events; rankings look back up to 90 days
     audit_days: int = Field(ge=365, le=3650)  # the audit log is kept longer than activity data
 
 

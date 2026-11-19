@@ -25,6 +25,7 @@ from app.modules import (
     imports,
     ingest,
     leads,
+    maintenance,
     needles,
     org,
     performance,
@@ -64,6 +65,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             if settings.seed_demo and settings.env != "production" and await seed_demo(db):
                 log.info("seeded the demo factory")
         tasks.append(asyncio.create_task(_rules_loop(settings.rules_interval_seconds), name="alert-rules"))
+        tasks.append(asyncio.create_task(maintenance.purge_loop(), name="retention-purge"))
         if settings.simulator_enabled:
             simulator.start()
     yield
@@ -144,6 +146,7 @@ def create_app() -> FastAPI:
         performance.router,
         reports.router,
         policies.router,
+        maintenance.router,
         audit_log.router,
         cameras.router,
         setup.router,
