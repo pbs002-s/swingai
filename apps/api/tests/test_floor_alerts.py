@@ -42,11 +42,17 @@ async def test_unknown_line_is_404(admin):
     assert (await admin.get("/floor?line_id=99999")).status_code == 404
 
 
-async def test_long_machine_stop_raises_one_alert_and_resolves(db):
-    from app.models import Factory
-    from app.simulator.engine import ensure_demo_shift
+async def test_long_machine_stop_raises_one_alert_and_resolves(db, monkeypatch):
+    from zoneinfo import ZoneInfo
 
-    await ensure_demo_shift(db, (await db.execute(select(Factory))).scalars().first())  # alerts only run inside a shift
+    from app.modules import alerts
+    from app.modules.shift import ShiftWindow
+
+    async def open_shift(_db, _factory):  # alerts only run inside a shift and outside a break: fix it, whatever the clock says
+        now = utcnow()
+        return ShiftWindow(now - timedelta(hours=4), now + timedelta(hours=4), (), ZoneInfo("Asia/Dhaka"))
+
+    monkeypatch.setattr(alerts, "current_shift", open_shift)
     st = (await db.execute(select(Station).where(Station.code == "L5-S20"))).scalar_one()
     since = utcnow() - timedelta(minutes=40)
     live = await db.get(StationLive, st.id) or StationLive(station_id=st.id)
