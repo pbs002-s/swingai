@@ -59,7 +59,9 @@ def stream_source(cam: dict[str, Any]) -> str:
     )
 
 
-async def register_streams(client: httpx.AsyncClient, go2rtc_url: str, cameras: list[dict[str, Any]]) -> int:
+async def register_streams(
+    client: httpx.AsyncClient, go2rtc_url: str, cameras: list[dict[str, Any]], auth: tuple[str, str] | None = None
+) -> int:
     """PUT one stream per camera (idempotent, so it also heals a go2rtc restart). Returns how many succeeded."""
     done = 0
     for cam in cameras:
@@ -67,7 +69,7 @@ async def register_streams(client: httpx.AsyncClient, go2rtc_url: str, cameras: 
             continue
         try:
             params = {"name": cam["code"], "src": stream_source(cam)}
-            resp = await client.put(f"{go2rtc_url.rstrip('/')}/api/streams", params=params)
+            resp = await client.put(f"{go2rtc_url.rstrip('/')}/api/streams", params=params, auth=auth)
             done += resp.is_success
         except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
             log.warning("go2rtc register %s failed: %s", cam.get("code"), exc.__class__.__name__)

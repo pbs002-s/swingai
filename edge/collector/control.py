@@ -45,12 +45,14 @@ class Control:
         converter: Converter,
         cache_path: str | Path,
         go2rtc_url: str = "",
+        go2rtc_auth: tuple[str, str] | None = None,
     ):
         self.client, self.outbox, self.converter = client, outbox, converter
         self.base = api_url.rstrip("/")
         self.headers = {"Authorization": f"Bearer {token}"}
         self.cache_path = Path(cache_path)
         self.go2rtc_url = go2rtc_url
+        self.go2rtc_auth = go2rtc_auth
         self.config: dict[str, Any] | None = self._load_cache()
         self._config_missing_logged = False
 
@@ -93,4 +95,4 @@ class Control:
             self.config = config
             log.info("edge config updated")
         if self.go2rtc_url and self.config:
-            await register_streams(self.client, self.go2rtc_url, self.config.get("cameras", []))
+            await register_streams(self.client, self.go2rtc_url, self.config.get("cameras", []), self.go2rtc_auth)

@@ -66,6 +66,7 @@ async def run(settings: Settings) -> None:
             converter,
             settings.config_cache_path,
             settings.go2rtc_url,
+            (settings.go2rtc_user, settings.go2rtc_password) if settings.go2rtc_password else None,
         )
         bridge.start()
         log.info(

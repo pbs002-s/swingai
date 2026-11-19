@@ -14,6 +14,10 @@ services:
   go2rtc:
     image: alexxit/go2rtc:1.9.9
     restart: unless-stopped
+    environment:
+      GO2RTC_USER: ${GO2RTC_USER:-viewer}
+      GO2RTC_PASSWORD: ${GO2RTC_PASSWORD:?set GO2RTC_PASSWORD in .env (the live view password)}
+    volumes: [./go2rtc.yaml:/config/go2rtc.yaml:ro]
     ports:
       - "1984:1984"  # player + API (the collector registers cameras here)
       - "8555:8555"  # WebRTC media (tcp + udp)
@@ -26,6 +30,8 @@ services:
     env_file: .env
     environment:
       GO2RTC_URL: http://go2rtc:1984
+      GO2RTC_USER: ${GO2RTC_USER:-viewer}
+      GO2RTC_PASSWORD: ${GO2RTC_PASSWORD}
       MQTT_HOST: mosquitto
       OUTBOX_PATH: /data/outbox.sqlite3
     volumes: [edge-data:/data]

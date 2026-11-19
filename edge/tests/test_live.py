@@ -71,3 +71,20 @@ def test_a_broken_zone_does_not_register_a_raw_stream():
             return await register_streams(c, "http://go2rtc:1984", [bad])
 
     assert asyncio.run(run()) == 0 and seen == []
+
+
+def test_registration_sends_the_live_view_password():
+    seen = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        seen.append(req.headers.get("authorization"))
+        return httpx.Response(200)
+
+    cam = {"code": "C", "connection": {"host": "h"}}
+
+    async def run() -> None:
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
+            await register_streams(c, "http://go2rtc:1984", [cam], ("viewer", "pw"))
+
+    asyncio.run(run())
+    assert seen[0] and seen[0].startswith("Basic ")
