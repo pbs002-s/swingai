@@ -12,7 +12,9 @@ const DEMO = process.env.NEXT_PUBLIC_DEMO === "1";
 const DEMO_USERS = [
   ["admin@stitchsense.local", "Factory admin"],
   ["supervisor@stitchsense.local", "Supervisor"],
-  ["quality@stitchsense.local", "Quality + maintenance"],
+  ["quality@stitchsense.local", "Quality"],
+  ["maintenance@stitchsense.local", "Maintenance"],
+  ["manager@stitchsense.local", "Management"],
 ] as const;
 
 export default function LoginPage() {
