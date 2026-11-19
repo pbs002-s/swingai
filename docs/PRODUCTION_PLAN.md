@@ -48,7 +48,7 @@ Built and tested:
 - [x] 8 Retention purge, scheduled and audited
 - [x] 10 Request ID in logs and headers, Bangla error messages. **Optimistic locking (C-4) is not built**
 - [x] 11 Install guide, env generator, health check script. Not tested on a clean machine or with a real domain
-- [x] 14 (partly) E2E tests fixed to be independent of leftover data; CI runs them for the first time on PR #3
+- [x] 14 E2E tests run in CI and pass (PR #3). Real bugs they found and are fixed: sidebar cut off on short screens, saved message vanishing on the policies page, lab blocked by the production CSP. The web build retries when the Google Fonts download fails
 
 Not done:
 
