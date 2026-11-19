@@ -193,6 +193,7 @@ async def test_live_wall_urls_and_access(admin, supervisor, anon, db):
     assert r.status_code == 200, r.text
     row = next(c for c in r.json()["data"] if c["id"] == cam["id"])
     assert row["live"] == {"mode": "embed", "url": f"http://10.20.0.5:1984/stream.html?src={cam['code']}&mode=webrtc,mse"}
+    assert row["privacy_zones"] == 0  # the wall warns about a camera with nothing masked
     assert "s3cret-cam" not in r.text and "connection" not in row  # the camera password never reaches the browser
     assert (await anon.get("/cameras/live")).status_code == 401
 
