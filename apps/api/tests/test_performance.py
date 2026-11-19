@@ -220,3 +220,29 @@ def test_each_day_uses_the_shift_version_in_force_that_day():
     assert _shift_at(versions, d(12))["start"] == "21:00"
     assert _shift_at(versions, datetime(2026, 10, 1, tzinfo=UTC))["start"] == "08:00"  # before any version
     assert _shift_at([], d(5))["start"]  # no policy at all: the default shift
+
+
+async def test_day_report_and_csv(manager, supervisor, perf_data):
+    day = (utcnow().astimezone(TZ).date() - timedelta(days=1)).isoformat()
+    r = await manager.get(f"/reports/day?date={day}&line_id={perf_data['line']}")
+    assert r.status_code == 200, r.text
+    d = r.json()["data"]
+    assert [w["worker"]["name"] for w in d["workers"]] == sorted(PLAN)  # a report lists people alphabetically, never ranked
+    assert d["totals"]["accepted"] == sum(v[0] for v in PLAN.values()) and d["partial"] is False
+    assert all(not k.endswith("rank") for k in d["workers"][0])
+
+    csv_resp = await manager.get(f"/reports/day.csv?date={day}&line_id={perf_data['line']}")
+    assert csv_resp.status_code == 200 and csv_resp.headers["content-type"].startswith("text/csv")
+    assert "attachment" in csv_resp.headers["content-disposition"] and "Ayesha P." in csv_resp.text
+    assert (await manager.get(f"/reports/day.csv?date={day}&line_id={perf_data['line']}&section=downtime")).status_code == 200
+
+    assert (await supervisor.get(f"/reports/day?date={day}&line_id={perf_data['line']}")).status_code == 403
+    assert (await manager.get(f"/reports/day?date={day}&line_id=999999")).status_code == 404
+    assert (await manager.get(f"/reports/day?date=not-a-date&line_id={perf_data["line"]}")).status_code == 400
+
+
+def test_csv_cells_cannot_run_formulas():
+    from app.modules.reports import csv_cell, to_csv
+
+    assert csv_cell("=HYPERLINK(1)") == "'=HYPERLINK(1)" and csv_cell("@x") == "'@x" and csv_cell(5) == 5
+    assert to_csv(["a"], [["+1+1"]]).startswith("﻿") and "'+1+1" in to_csv(["a"], [["+1+1"]])

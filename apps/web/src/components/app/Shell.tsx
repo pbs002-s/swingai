@@ -26,6 +26,7 @@ const NAV: NavItem[] = [
   { href: "/app/cameras", key: "cameras", icon: "camera", roles: ["factory_admin"] },
   { href: "/app/needles", key: "needles", icon: "needle", roles: ["factory_admin", "quality", "maintenance", "management"] },
   { href: "/app/performance", key: "performance", icon: "bars", roles: ["factory_admin", "management"] },
+  { href: "/app/reports", key: "reports", icon: "check", roles: ["factory_admin", "management"] },
   { href: "/app/setup", key: "setup", icon: "server", roles: ["factory_admin"] },
   { href: "/app/settings", key: "settings", icon: "settings", roles: ["factory_admin"] },
   ...(DEMO ? [{ href: "/app/lab", key: "lab" as MessageKey, icon: "play" as IconName, roles: ["factory_admin"] }] : []),
@@ -74,7 +75,7 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <MeContext.Provider value={me}>
       <div className="flex min-h-dvh flex-col lg:flex-row">
-        <aside className="flex shrink-0 flex-col gap-4 border-b border-line bg-bg px-3 py-3 lg:sticky lg:top-0 lg:h-dvh lg:w-[232px] lg:border-b-0 lg:border-r lg:py-4">
+        <aside className="print:hidden flex shrink-0 flex-col gap-4 border-b border-line bg-bg px-3 py-3 lg:sticky lg:top-0 lg:h-dvh lg:w-[232px] lg:border-b-0 lg:border-r lg:py-4">
           <div className="flex items-center justify-between gap-2 px-2">
             <Link href="/" className="flex items-center gap-2.5 text-ink" aria-label="StitchSense home">
               <Logo size={24} />

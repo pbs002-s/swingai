@@ -279,14 +279,24 @@ def _percentile(value: float, values: list[float]) -> float:
     return round(sum(v < value for v in values) / (len(values) - 1) * 100, 1)
 
 
-async def compute(db: AsyncSession, user: User, days: int | None, group: str | None, line_id: int | None) -> dict[str, Any]:
+async def compute(
+    db: AsyncSession,
+    user: User,
+    days: int | None,
+    group: str | None,
+    line_id: int | None,
+    *,
+    since: datetime | None = None,
+    until: datetime | None = None,
+) -> dict[str, Any]:
+    """Per-worker figures for the last `days`, or for an exact [since, until) when the reports ask for one day."""
     factory = await _factory(db)
     pv = await _current_version(db, factory.id)
     policy = _policy_out(pv)
     weights: dict[str, int] = policy["weights"]
     days = days or int(policy["period_days"])
-    until = utcnow()
-    since = until - timedelta(days=days)
+    until = until or utcnow()
+    since = since or until - timedelta(days=days)
     op_id = int(group) if group and group.isdigit() else None
     prod = await _production(db, since, until, _scope(user, line_id), op_id)
 
