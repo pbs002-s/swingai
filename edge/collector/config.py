@@ -19,6 +19,8 @@ class Settings:
     device_code: str | None
     log_level: str
     go2rtc_url: str = ""
+    go2rtc_user: str = ""
+    go2rtc_password: str = ""
 
     @classmethod
     def from_env(cls, env: dict[str, str] | None = None) -> "Settings":
@@ -42,4 +44,6 @@ class Settings:
             device_code=env.get("SS_DEVICE_CODE") or None,
             log_level=env.get("LOG_LEVEL", "INFO").upper(),
             go2rtc_url=env.get("GO2RTC_URL", ""),
+            go2rtc_user=env.get("GO2RTC_USER", ""),
+            go2rtc_password=env.get("GO2RTC_PASSWORD", ""),
         )

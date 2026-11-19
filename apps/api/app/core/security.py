@@ -66,7 +66,7 @@ class RateLimiter:
 
 
 login_limiter = RateLimiter(limit=get_settings().login_rate_per_minute, window_s=60)
-ingest_limiter = RateLimiter(limit=120, window_s=60)
+ingest_limiter = RateLimiter(limit=get_settings().ingest_rate_per_minute, window_s=60)
 
 
 def client_ip(request: Request) -> str:

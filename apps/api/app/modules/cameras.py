@@ -388,6 +388,7 @@ async def live_cameras(request: Request, db: AsyncSession = Depends(get_session)
                 "online": _frame_fresh(c.id) if c.config.get("test_source") else is_online(c),
                 "last_seen_at": c.last_seen_at.isoformat() if c.last_seen_at else None,
                 "live": live,
+                "privacy_zones": sum(1 for z in c.config.get("zones", []) if z.get("kind") == "privacy"),
             }
         )
     audit(db, user.id, "camera.live_view", "device", None, {"cameras": len(out)}, client_ip(request))

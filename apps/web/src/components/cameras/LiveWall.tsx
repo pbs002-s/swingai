@@ -10,6 +10,7 @@ export type LiveCamera = {
   name: string;
   stations: { id: number; code: string }[];
   online: boolean;
+  privacy_zones: number;
   live: { mode: "embed" | "demo" | "frames" | "none"; url: string | null };
 };
 
@@ -39,7 +40,12 @@ export function Tile({ cam, onOpen }: { cam: LiveCamera; onOpen: () => void }) {
         {(cam.live.mode === "demo" || cam.live.mode === "frames") && (
           <span className="ml-auto rounded bg-white/20 px-1.5 text-[11px]">{cam.live.mode === "demo" ? "Simulated" : "Test camera"}</span>
         )}
-        {!cam.online && cam.live.mode === "embed" &&<span className="ml-auto text-[11px]">Offline</span>}
+        {cam.live.mode === "embed" && cam.privacy_zones === 0 && (
+          <span className="rounded bg-idle-bg px-1.5 text-[11px] text-idle" title="No privacy zone is drawn for this camera, so the whole picture is shown.">
+            No privacy mask
+          </span>
+        )}
+        {!cam.online && cam.live.mode === "embed" && <span className="ml-auto text-[11px]">Offline</span>}
       </span>
     </button>
   );

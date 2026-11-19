@@ -148,12 +148,37 @@ async def set_policy(
 # ---------- period windows ----------
 
 
-def _work_windows(shift_body: dict[str, Any], tz_name: str, since: datetime, until: datetime) -> list[tuple[datetime, datetime]]:
+ShiftVersions = list[tuple[datetime, datetime | None, dict[str, Any]]]
+
+
+async def _shift_versions(db: AsyncSession, factory_id: int) -> ShiftVersions:
+    q = (
+        select(PolicyVersion.effective_from, PolicyVersion.effective_to, PolicyVersion.body)
+        .join(Policy, Policy.id == PolicyVersion.policy_id)
+        .where(Policy.factory_id == factory_id, Policy.kind == "shift")
+        .order_by(PolicyVersion.effective_from)
+    )
+    return [tuple(r) for r in (await db.execute(q)).all()]
+
+
+def _shift_at(versions: ShiftVersions, at: datetime) -> dict[str, Any]:
+    """The shift version in force at `at`: history is judged by the schedule of its own day, not today's."""
+    body = versions[0][2] if versions else {}  # before the first version: the earliest one
+    for start, end, b in versions:
+        if start <= at and (end is None or at < end):
+            return {**DEFAULT_SHIFT, **b}
+        if start <= at:
+            body = b  # gap after a closed version: keep the latest that started
+    return {**DEFAULT_SHIFT, **body}
+
+
+def _work_windows(versions: ShiftVersions, tz_name: str, since: datetime, until: datetime) -> list[tuple[datetime, datetime]]:
     """Scheduled working intervals (breaks removed) of every shift overlapping [since, until], clipped to it."""
     tz, out = ZoneInfo(tz_name), []
     day = since.astimezone(tz).date() - timedelta(days=1)
     while day <= until.astimezone(tz).date():
-        sw: ShiftWindow = window_for(shift_body, tz_name, datetime.combine(day, time(12), tz))
+        noon = datetime.combine(day, time(12), tz)
+        sw: ShiftWindow = window_for(_shift_at(versions, noon), tz_name, noon)
         cursor = sw.start
         for b0, b1 in sorted(sw.breaks) + [(sw.end, sw.end)]:
             a, b = max(cursor, since), min(b0, until)
@@ -254,14 +279,24 @@ def _percentile(value: float, values: list[float]) -> float:
     return round(sum(v < value for v in values) / (len(values) - 1) * 100, 1)
 
 
-async def compute(db: AsyncSession, user: User, days: int | None, group: str | None, line_id: int | None) -> dict[str, Any]:
+async def compute(
+    db: AsyncSession,
+    user: User,
+    days: int | None,
+    group: str | None,
+    line_id: int | None,
+    *,
+    since: datetime | None = None,
+    until: datetime | None = None,
+) -> dict[str, Any]:
+    """Per-worker figures for the last `days`, or for an exact [since, until) when the reports ask for one day."""
     factory = await _factory(db)
     pv = await _current_version(db, factory.id)
     policy = _policy_out(pv)
     weights: dict[str, int] = policy["weights"]
     days = days or int(policy["period_days"])
-    until = utcnow()
-    since = until - timedelta(days=days)
+    until = until or utcnow()
+    since = since or until - timedelta(days=days)
     op_id = int(group) if group and group.isdigit() else None
     prod = await _production(db, since, until, _scope(user, line_id), op_id)
 
@@ -281,7 +316,7 @@ async def compute(db: AsyncSession, user: User, days: int | None, group: str | N
         workers = {k: v for k, v in workers.items() if max(v["ops"], key=lambda o: o["earned"])["group"] == group}
 
     ids = list(workers)
-    windows = _work_windows(await policy_body(db, factory.id, "shift", DEFAULT_SHIFT), factory.timezone, since, until)
+    windows = _work_windows(await _shift_versions(db, factory.id), factory.timezone, since, until)
     th = await policy_body(db, factory.id, "thresholds", DEFAULT_THRESHOLDS)
     day_of, day_min = [], defaultdict(float)
     for a, b in windows:

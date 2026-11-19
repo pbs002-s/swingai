@@ -26,7 +26,10 @@ const NAV: NavItem[] = [
   { href: "/app/cameras", key: "cameras", icon: "camera", roles: ["factory_admin"] },
   { href: "/app/needles", key: "needles", icon: "needle", roles: ["factory_admin", "quality", "maintenance", "management"] },
   { href: "/app/performance", key: "performance", icon: "bars", roles: ["factory_admin", "management"] },
+  { href: "/app/reports", key: "reports", icon: "check", roles: ["factory_admin", "management"] },
   { href: "/app/setup", key: "setup", icon: "server", roles: ["factory_admin"] },
+  { href: "/app/policies", key: "policies", icon: "settings", roles: ["factory_admin", "management"] },
+  { href: "/app/audit", key: "audit", icon: "check", roles: ["factory_admin"] },
   { href: "/app/settings", key: "settings", icon: "settings", roles: ["factory_admin"] },
   ...(DEMO ? [{ href: "/app/lab", key: "lab" as MessageKey, icon: "play" as IconName, roles: ["factory_admin"] }] : []),
 ];
@@ -74,14 +77,14 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <MeContext.Provider value={me}>
       <div className="flex min-h-dvh flex-col lg:flex-row">
-        <aside className="flex shrink-0 flex-col gap-4 border-b border-line bg-bg px-3 py-3 lg:sticky lg:top-0 lg:h-dvh lg:w-[232px] lg:border-b-0 lg:border-r lg:py-4">
+        <aside className="print:hidden flex shrink-0 flex-col gap-4 border-b border-line bg-bg px-3 py-3 lg:sticky lg:top-0 lg:h-dvh lg:w-[232px] lg:border-b-0 lg:border-r lg:py-4">
           <div className="flex items-center justify-between gap-2 px-2">
             <Link href="/" className="flex items-center gap-2.5 text-ink" aria-label="StitchSense home">
               <Logo size={24} />
               <span className="text-[16px] font-semibold tracking-[-0.02em]">StitchSense</span>
             </Link>
           </div>
-          <nav aria-label="App" className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+          <nav aria-label="App" className="flex gap-1 overflow-x-auto lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden">
             {NAV.filter((n) => canSee(me, n)).map((n) => {
               const active = pageFor(pathname) === n;
               return (
@@ -99,7 +102,7 @@ export function Shell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
-          <div className="mt-auto hidden flex-col gap-3 border-t border-line px-2 pt-3 lg:flex">
+          <div className="mt-auto hidden shrink-0 flex-col gap-3 border-t border-line px-2 pt-3 lg:flex">
             <div className="flex items-center gap-2">
               <div role="group" aria-label="Language" className="flex overflow-hidden rounded-lg border border-line-2 text-[13px]">
                 {(["en", "bn"] as const).map((l) => (

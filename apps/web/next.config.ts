@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 
 const API_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
 
+const DEMO = process.env.NEXT_PUBLIC_DEMO === "1";
+const LAB_SCRIPTS = DEMO ? " https://cdn.jsdelivr.net 'wasm-unsafe-eval'" : "";
+const LAB_CONNECT = DEMO ? " https://cdn.jsdelivr.net https://storage.googleapis.com" : "";
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
@@ -13,8 +17,8 @@ const securityHeaders = [
     ? [{
         key: "Content-Security-Policy",
         value: [
-          "default-src 'self'", "script-src 'self' 'unsafe-inline'", "style-src 'self' 'unsafe-inline'",
-          "img-src 'self' data: blob:", "font-src 'self'", "connect-src 'self'", "frame-ancestors 'self'",
+          "default-src 'self'", `script-src 'self' 'unsafe-inline'${LAB_SCRIPTS}`, "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' data: blob:", "font-src 'self'", `connect-src 'self'${LAB_CONNECT}`, "frame-ancestors 'self'",
           "frame-src 'self' http: https:", "object-src 'none'", "base-uri 'self'", "form-action 'self'",
         ].join("; "),
       }]

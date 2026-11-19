@@ -12,10 +12,12 @@ from sqlalchemy import text
 from app.core.config import get_settings
 from app.core.db import SessionLocal, engine
 from app.core.errors import install_error_handlers, ok
+from app.core.request_id import install_log_filter, new_request_id, request_id_var
 from app.core.security import require_roles
 from app.models import User
 from app.modules import (
     alerts,
+    audit_log,
     auth,
     cameras,
     edge_sim,
@@ -24,9 +26,12 @@ from app.modules import (
     imports,
     ingest,
     leads,
+    maintenance,
     needles,
     org,
     performance,
+    policies,
+    reports,
     setup,
     setup_users,
     stream,
@@ -51,7 +56,8 @@ async def _rules_loop(interval: float) -> None:
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(request_id)s] %(name)s %(message)s")
+    install_log_filter()
     simulator = Simulator(SessionLocal)
     app.state.simulator = simulator
     tasks: list[asyncio.Task[None]] = []
@@ -61,6 +67,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             if settings.seed_demo and settings.env != "production" and await seed_demo(db):
                 log.info("seeded the demo factory")
         tasks.append(asyncio.create_task(_rules_loop(settings.rules_interval_seconds), name="alert-rules"))
+        tasks.append(asyncio.create_task(maintenance.purge_loop(), name="retention-purge"))
         if settings.simulator_enabled:
             simulator.start()
     yield
@@ -120,7 +127,13 @@ def create_app() -> FastAPI:
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next):  # type: ignore[no-untyped-def]
-        response: Response = await call_next(request)
+        rid = new_request_id(request.headers.get("x-request-id"))
+        token = request_id_var.set(rid)
+        try:
+            response: Response = await call_next(request)
+        finally:
+            request_id_var.reset(token)
+        response.headers["X-Request-ID"] = rid
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
@@ -139,6 +152,10 @@ def create_app() -> FastAPI:
         needles.router,
         leads.router,
         performance.router,
+        reports.router,
+        policies.router,
+        maintenance.router,
+        audit_log.router,
         cameras.router,
         setup.router,
         setup_users.router,
