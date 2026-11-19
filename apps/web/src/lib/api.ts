@@ -23,6 +23,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<{ da
   const headers = new Headers(init.headers);
   if (init.body && !headers.has("content-type")) headers.set("content-type", "application/json");
   if (method !== "GET") headers.set("x-csrf-token", csrfToken());
+  headers.set("accept-language", document.documentElement.lang === "bn" ? "bn" : "en"); // errors come back in the UI language
   let res: Response;
   try {
     res = await fetch(`/api/v1${path}`, { ...init, method, headers, credentials: "same-origin" });

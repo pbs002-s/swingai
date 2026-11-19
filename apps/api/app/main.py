@@ -12,6 +12,7 @@ from sqlalchemy import text
 from app.core.config import get_settings
 from app.core.db import SessionLocal, engine
 from app.core.errors import install_error_handlers, ok
+from app.core.request_id import install_log_filter, new_request_id, request_id_var
 from app.core.security import require_roles
 from app.models import User
 from app.modules import (
@@ -55,7 +56,8 @@ async def _rules_loop(interval: float) -> None:
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(request_id)s] %(name)s %(message)s")
+    install_log_filter()
     simulator = Simulator(SessionLocal)
     app.state.simulator = simulator
     tasks: list[asyncio.Task[None]] = []
@@ -125,7 +127,13 @@ def create_app() -> FastAPI:
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next):  # type: ignore[no-untyped-def]
-        response: Response = await call_next(request)
+        rid = new_request_id(request.headers.get("x-request-id"))
+        token = request_id_var.set(rid)
+        try:
+            response: Response = await call_next(request)
+        finally:
+            request_id_var.reset(token)
+        response.headers["X-Request-ID"] = rid
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
