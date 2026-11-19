@@ -4,7 +4,7 @@ import type { USERS } from "./helpers";
 
 // Each demo login holds one role; the menu must show exactly that role's pages.
 const MENU: Record<keyof typeof USERS, string[]> = {
-  admin: ["Overview", "Live floor", "Review queue", "Alerts", "Live cameras", "Cameras", "Needles", "Performance", "Reports", "Setup", "Settings", "Lab"],
+  admin: ["Overview", "Live floor", "Review queue", "Alerts", "Live cameras", "Cameras", "Needles", "Performance", "Reports", "Setup", "Audit log", "Settings", "Lab"],
   supervisor: ["Overview", "Live floor", "Review queue", "Alerts", "Live cameras"],
   quality: ["Overview", "Review queue", "Alerts", "Needles"],
   maintenance: ["Overview", "Live floor", "Review queue", "Alerts", "Needles"],

@@ -16,6 +16,7 @@ from app.core.security import require_roles
 from app.models import User
 from app.modules import (
     alerts,
+    audit_log,
     auth,
     cameras,
     edge_sim,
@@ -141,6 +142,7 @@ def create_app() -> FastAPI:
         leads.router,
         performance.router,
         reports.router,
+        audit_log.router,
         cameras.router,
         setup.router,
         setup_users.router,
