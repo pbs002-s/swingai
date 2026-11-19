@@ -28,6 +28,7 @@ const NAV: NavItem[] = [
   { href: "/app/performance", key: "performance", icon: "bars", roles: ["factory_admin", "management"] },
   { href: "/app/reports", key: "reports", icon: "check", roles: ["factory_admin", "management"] },
   { href: "/app/setup", key: "setup", icon: "server", roles: ["factory_admin"] },
+  { href: "/app/policies", key: "policies", icon: "settings", roles: ["factory_admin", "management"] },
   { href: "/app/audit", key: "audit", icon: "check", roles: ["factory_admin"] },
   { href: "/app/settings", key: "settings", icon: "settings", roles: ["factory_admin"] },
   ...(DEMO ? [{ href: "/app/lab", key: "lab" as MessageKey, icon: "play" as IconName, roles: ["factory_admin"] }] : []),
