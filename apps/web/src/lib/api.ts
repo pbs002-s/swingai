@@ -1,6 +1,8 @@
 /** Typed client for the StitchSense API (docs/API.md). Same-origin; cookies carry the session. */
 
-export type ApiError = { code: string; message: string; details?: unknown };
+import { MockError, mockApi } from "@/lib/demo-mock";
+
+export type ApiError ={ code: string; message: string; details?: unknown };
 type Envelope<T> = { success: boolean; data: T; error: ApiError | null; meta: Record<string, unknown> };
 
 export class ApiFailure extends Error {
@@ -18,8 +20,26 @@ function csrfToken(): string {
   return match ? decodeURIComponent(match[1]) : "";
 }
 
+const DEMO = process.env.NEXT_PUBLIC_DEMO === "1";
+const MOCK_FLAG = "ss_demo_mock";
+
+/** True once a demo build has found no API and switched to built-in fixture data. */
+export const isMockMode = () => DEMO && typeof sessionStorage !== "undefined" && sessionStorage.getItem(MOCK_FLAG) === "1";
+
+function fromMock<T>(path: string, method: string, init: RequestInit): { data: T; meta: Record<string, unknown> } {
+  sessionStorage.setItem(MOCK_FLAG, "1");
+  try {
+    const body = typeof init.body === "string" ? (JSON.parse(init.body) as unknown) : undefined;
+    return mockApi(path, method, body) as { data: T; meta: Record<string, unknown> };
+  } catch (e) {
+    if (e instanceof MockError) throw new ApiFailure(e.status, e.code, e.message);
+    throw e;
+  }
+}
+
 export async function api<T>(path: string, init: RequestInit = {}): Promise<{ data: T; meta: Record<string, unknown> }> {
   const method = (init.method ?? "GET").toUpperCase();
+  if (isMockMode()) return fromMock<T>(path, method, init);
   const headers = new Headers(init.headers);
   if (init.body && !headers.has("content-type")) headers.set("content-type", "application/json");
   if (method !== "GET") headers.set("x-csrf-token", csrfToken());
@@ -28,6 +48,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<{ da
   try {
     res = await fetch(`/api/v1${path}`, { ...init, method, headers, credentials: "same-origin" });
   } catch {
+    if (DEMO) return fromMock<T>(path, method, init);
     throw new ApiFailure(0, "NETWORK", "Cannot reach the server. Check the connection.");
   }
   let body: Envelope<T> | null = null;
@@ -36,6 +57,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<{ da
   } catch {
     /* non-JSON response */
   }
+  if (DEMO && (!body || typeof body.success !== "boolean")) return fromMock<T>(path, method, init); // no API behind this host
   if (!res.ok || !body?.success) {
     const err = body?.error;
     throw new ApiFailure(res.status, err?.code ?? "HTTP_ERROR", err?.message ?? "Something went wrong. Try again.");
