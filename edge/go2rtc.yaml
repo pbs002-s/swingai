@@ -1,0 +1,8 @@
+# Live view server. The player and its API ask for this username and password (HTTP basic auth).
+# Values come from the environment so they are never stored in the repo.
+api:
+  listen: ":1984"
+  username: ${GO2RTC_USER}
+  password: ${GO2RTC_PASSWORD}
+webrtc:
+  listen: ":8555"

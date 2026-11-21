@@ -44,7 +44,7 @@ jobs:
       - run: npx tsc --noEmit
       - run: npx eslint src e2e
       - run: npm audit --omit=dev --audit-level=high
-      - run: npm run build
+      - run: npm run build || { sleep 20; npm run build; } || { sleep 40; npm run build; }  # next/font downloads Google Fonts; retry if that fetch fails
 
   edge:
     runs-on: ubuntu-latest
@@ -98,7 +98,7 @@ jobs:
         run: |
           npm ci
           npx playwright install --with-deps chromium
-          npm run build
+          npm run build || { sleep 20; npm run build; } || { sleep 40; npm run build; }  # next/font downloads Google Fonts; retry if that fetch fails
           nohup npx next start -p 3100 > web.log 2>&1 &
           for i in $(seq 1 60); do curl -sf localhost:3100/ > /dev/null && break; sleep 1; done
       - name: Playwright

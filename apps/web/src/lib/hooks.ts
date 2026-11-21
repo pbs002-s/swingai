@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ApiFailure, api } from "@/lib/api";
+import { ApiFailure, api, isMockMode } from "@/lib/api";
 
 type State<T> = { data: T | null; error: ApiFailure | null; loading: boolean };
 
@@ -49,6 +49,7 @@ export function useLiveStream(onEvent: (kind: string, data: Record<string, unkno
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
+    if (isMockMode()) return; // no live stream in the offline demo
     const url = `/api/v1/stream/floor${lineId ? `?line_id=${lineId}` : ""}`;
     const source = new EventSource(url, { withCredentials: true });
     const kinds = ["station_state", "alert", "alert_update", "review_added", "review_done"];
